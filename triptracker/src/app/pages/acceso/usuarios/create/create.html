@@ -1,0 +1,167 @@
+<p-card styleClass="create-user-card shadow-2"
+  [style]="{ 'border': '1px solid #e9e2db', 'border-radius': '12px', 'background': 'linear-gradient(to bottom, #ffffff 0%, #fafafa 100%)' }">
+
+  <!-- Header -->
+  <ng-template pTemplate="header">
+    <div style="padding:1.5rem 1.5rem 1rem;">
+      <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;">
+        <i class="pi pi-user-plus" style="font-size:1.5rem;color:#875D4A;"></i>
+        <h3 style="margin:0;color:#111;font-size:1.5rem;font-weight:600;">Crear Usuario</h3>
+      </div>
+      <p style="margin:0;color:#64748b;font-size:0.95rem;padding-left:2.25rem;">
+        Completa los datos del nuevo usuario
+      </p>
+    </div>
+  </ng-template>
+
+  <!-- Formulario -->
+  <ng-template pTemplate="content">
+    <form #f="ngForm" (ngSubmit)="submit(f)">
+      <div class="form-grid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:1.5rem;padding:0.5rem 0;">
+
+        <!-- Campo Nombre -->
+        <div class="field">
+          <label for="nombre"
+            style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+            Nombre <span style="color:#ef4444;">*</span>
+          </label>
+          <input id="nombre" name="usua_Nombre" [(ngModel)]="usuario.usua_Nombre" required minlength="3" pInputText
+            placeholder="Ingresa el nombre completo" [style]="{ 'width': '100%' }"
+            [class.ng-invalid]="isFieldInvalid(f, 'usua_Nombre')" [class.ng-dirty]="f.controls['usua_Nombre']?.dirty" />
+
+          <small *ngIf="isFieldInvalid(f, 'usua_Nombre')" class="p-error" style="display:block;margin-top:0.5rem;">
+            El nombre es requerido (mínimo 3 caracteres)
+          </small>
+        </div>
+
+        <!-- Campo Contraseña -->
+        <div class="field">
+          <label for="password"
+            style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+            Contraseña <span style="color:#ef4444;">*</span>
+          </label>
+          <p-password id="password" name="usua_Contrasena" [(ngModel)]="usuario.usua_Contrasena" required
+            placeholder="Contraseña segura" [toggleMask]="true" [feedback]="false" [style]="{ 'width': '100%' }"
+            [inputStyle]="{ 'width': '100%' }" [class.ng-invalid]="isFieldInvalid(f, 'usua_Contrasena')"
+            [class.ng-dirty]="f.controls['usua_Contrasena']?.dirty">
+          </p-password>
+
+          <small *ngIf="isFieldInvalid(f, 'usua_Contrasena')" class="p-error" style="display:block;margin-top:0.5rem;">
+            La contraseña es requerida
+          </small>
+        </div>
+
+        <!-- Campo Rol ID -->
+        <div class="field">
+          <label for="roleId"
+            style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+            Rol (ID) <span style="color:#ef4444;">*</span>
+          </label>
+          <p-inputNumber id="roleId" name="role_Id" [(ngModel)]="usuario.role_Id" required [showButtons]="true"
+            [min]="1" [style]="{ 'width': '100%' }" [inputStyle]="{ 'width': '100%' }">
+          </p-inputNumber>
+        </div>
+
+        <!-- Campo Colaborador ID -->
+        <div class="field">
+          <label for="colbId"
+            style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+            Colaborador (ID) <span style="color:#ef4444;">*</span>
+          </label>
+          <p-inputNumber id="colbId" name="colb_Id" [(ngModel)]="usuario.colb_Id" required [showButtons]="true"
+            [min]="1" [style]="{ 'width': '100%' }" [inputStyle]="{ 'width': '100%' }">
+          </p-inputNumber>
+        </div>
+
+        <!-- Toggle Administrador -->
+        <div class="field"
+          style="grid-column:1 / -1;display:flex;align-items:center;gap:1rem;padding:1rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
+          <p-inputSwitch id="adminSwitch" name="usua_Admin" [(ngModel)]="usuario.usua_Admin">
+          </p-inputSwitch>
+          <label for="adminSwitch" style="margin:0;color:#334155;font-weight:500;cursor:pointer;">
+            Es administrador
+          </label>
+          <i class="pi pi-info-circle" style="margin-left:auto;color:#64748b;cursor:help;"
+            title="Los administradores tienen acceso completo al sistema">
+          </i>
+        </div>
+      </div>
+
+      <!-- Botones -->
+      <div
+        style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #e2e8f0;">
+        <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [outlined]="true" [rounded]="true"
+          type="button" (onClick)="onCancel()" [style]="{ 'padding': '0.75rem 1.5rem' }">
+        </p-button>
+
+        <p-button [label]="saving ? 'Guardando...' : 'Crear Usuario'"
+          [icon]="saving ? 'pi pi-spin pi-spinner' : 'pi pi-check'" [rounded]="true" [raised]="true" type="submit"
+          [disabled]="saving" [style]="{ 
+            'background': '#875D4A', 
+            'border-color': '#875D4A',
+            'padding': '0.75rem 1.5rem',
+            'box-shadow': '0 4px 6px -1px rgba(135, 93, 74, 0.2), 0 2px 4px -1px rgba(135, 93, 74, 0.1)'
+          }">
+        </p-button>
+      </div>
+    </form>
+  </ng-template>
+</p-card>
+
+<style>
+  /* Inputs del formulario */
+  ::ng-deep .create-user-card .p-inputtext,
+  ::ng-deep .create-user-card .p-inputnumber-input,
+  ::ng-deep .create-user-card .p-password input {
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+  }
+
+  ::ng-deep .create-user-card .p-inputtext:focus,
+  ::ng-deep .create-user-card .p-inputnumber-input:focus,
+  ::ng-deep .create-user-card .p-password input:focus {
+    border-color: #875D4A;
+    box-shadow: 0 0 0 3px rgba(135, 93, 74, 0.1);
+  }
+
+  /* Estados de error */
+  ::ng-deep .create-user-card .ng-invalid.ng-dirty {
+    border-color: #ef4444 !important;
+  }
+
+  ::ng-deep .create-user-card .ng-invalid.ng-dirty:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+  }
+
+  /* Botones del InputNumber */
+  ::ng-deep .create-user-card .p-inputnumber-button {
+    border-radius: 0 8px 8px 0;
+  }
+
+  /* InputSwitch personalizado */
+  ::ng-deep .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+    background: #875D4A;
+  }
+
+  /* Efectos hover en botones */
+  ::ng-deep .p-button:hover {
+    transform: translateY(-1px);
+    transition: all 0.2s ease;
+  }
+
+  /* Sombra del card */
+  ::ng-deep .create-user-card.p-card {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .form-grid {
+      grid-template-columns: 1fr !important;
+      gap: 1rem !important;
+    }
+  }
+</style>

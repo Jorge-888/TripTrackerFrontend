@@ -1,0 +1,427 @@
+<div class="login-wrapper">
+  <!-- Fondo animado con círculos decorativos -->
+  <div class="background-decoration">
+    <div class="circle circle-1"></div>
+    <div class="circle circle-2"></div>
+    <div class="circle circle-3"></div>
+  </div>
+
+  <!-- Card principal flotante -->
+  <div class="login-card">
+    <!-- Lado izquierdo - Imagen/Ilustración -->
+    <div class="login-image-section">
+      <div class="image-container">
+        
+        <div class="image-container">
+            <img src="/assets/images/loginBus.png"/>
+        </div>
+      </div>
+      
+      <!-- Overlay con texto decorativo -->
+      <div class="image-overlay">
+        <h2 style="font-size: 2rem; font-weight: 700; margin: 0; color: #fff;">Bienvenido</h2>
+        <p style="color: rgba(255,255,255,0.9); margin-top: 0.5rem; font-size: 1.1rem;">Sistema de Gestión</p>
+      </div>
+    </div>
+
+    <!-- Lado derecho - Formulario -->
+    <div class="login-form-section">
+      <div class="form-container">
+        <!-- Header del formulario -->
+        <div class="form-header">
+          <h1 style="margin: 0; color: #1e293b; font-size: 2rem; font-weight: 700;">Bienvnenido a TripTracker</h1>
+          <p style="margin: 0.5rem 0 0; color: #64748b; font-size: 1rem;">Inicia sesión para continuar</p>
+        </div>
+
+        <!-- Formulario de login -->
+        <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" class="login-form">
+          <!-- Campo Usuario -->
+          <div class="form-field">
+            <label for="username" class="field-label">
+              <i class="pi pi-user"></i>
+              Usuario
+            </label>
+            <input 
+              id="username"
+              name="username"
+              type="text"
+              [(ngModel)]="usuario.usua_Nombre"
+              required
+              pInputText
+              placeholder="Ingresa tu usuario"
+              class="form-input"
+              [class.input-error]="isFieldInvalid(loginForm, 'username')" />
+            
+            <small 
+              *ngIf="isFieldInvalid(loginForm, 'username')"
+              class="error-message">
+              El usuario es requerido
+            </small>
+          </div>
+
+          <!-- Campo Contraseña -->
+          <div class="form-field">
+            <label for="password" class="field-label">
+              <i class="pi pi-lock"></i>
+              Contraseña
+            </label>
+            <p-password
+              id="password"
+              name="password"
+              [(ngModel)]="usuario.usua_Contrasena"
+              required
+              placeholder="Ingresa tu contraseña"
+              [toggleMask]="true"
+              [feedback]="false"
+              [style]="{ 'width': '100%' }"
+              [inputStyle]="{ 'width': '100%' }"
+              styleClass="password-field"
+              [class.input-error]="isFieldInvalid(loginForm, 'password')">
+            </p-password>
+            
+            <small 
+              *ngIf="isFieldInvalid(loginForm, 'password')"
+              class="error-message">
+              La contraseña es requerida
+            </small>
+          </div>
+
+
+          
+          <p-button
+            type="submit"
+            [label]="loading ? 'Iniciando sesión...' : 'Iniciar Sesión'"
+            [icon]="loading ? 'pi pi-spin pi-spinner' : 'pi pi-sign-in'"
+            [disabled]="loading"
+            [style]="{ 'width': '100%', 'margin-top': '1.5rem' }"
+            styleClass="login-button">
+          </p-button>
+
+          <!-- Mensaje de error general -->
+          <div *ngIf="errorMessage" class="error-banner">
+            <i class="pi pi-exclamation-circle"></i>
+            <span>{{ errorMessage }}</span>
+          </div>
+        </form>
+
+        <!-- Footer-->
+        <div class="form-footer">
+          <p style="color: #94a3b8; font-size: 0.9rem; text-align: center; margin: 0;">
+            Gestion de Viajes 2025
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Contenedor principal */
+  .login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f5f0eb 0%, #e6d7cf 50%, #d4c4b8 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 2rem;
+  }
+
+  /* Decoración del fondo */
+  .background-decoration {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(135, 93, 74, 0.1);
+    animation: float 20s infinite ease-in-out;
+  }
+
+  .circle-1 {
+    width: 400px;
+    height: 400px;
+    top: -100px;
+    left: -100px;
+    animation-delay: 0s;
+  }
+
+  .circle-2 {
+    width: 300px;
+    height: 300px;
+    bottom: -80px;
+    right: -80px;
+    animation-delay: 5s;
+  }
+
+  .circle-3 {
+    width: 200px;
+    height: 200px;
+    top: 50%;
+    left: 50%;
+    animation-delay: 10s;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0);
+    }
+    25% {
+      transform: translate(30px, -30px);
+    }
+    50% {
+      transform: translate(-20px, 20px);
+    }
+    75% {
+      transform: translate(20px, 10px);
+    }
+  }
+
+  /* Card principal */
+  .login-card {
+    display: flex;
+    width: 100%;
+    max-width: 1000px;
+    height: 600px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    animation: slideUp 0.6s ease-out;
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Sección de imagen */
+  .login-image-section {
+    flex: 1;
+    background: linear-gradient(135deg, #875D4A 0%, #6d4a3a 100%);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .image-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  
+  .image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+ 
+
+  .image-overlay {
+    position: absolute;
+    bottom: 3rem;
+    left: 3rem;
+    z-index: 2;
+  }
+
+  /* Sección del formulario */
+  .login-form-section {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    background: white;
+  }
+
+  .form-container {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .form-header {
+    margin-bottom: 2rem;
+  }
+
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  /* Campos del formulario */
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .field-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #334155;
+    font-weight: 500;
+    font-size: 0.95rem;
+  }
+
+  .field-label i {
+    color: #875D4A;
+  }
+
+  ::ng-deep .form-input,
+  ::ng-deep .password-field input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    background: #f8fafc;
+  }
+
+  ::ng-deep .form-input:focus,
+  ::ng-deep .password-field input:focus {
+    border-color: #875D4A;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(135, 93, 74, 0.1);
+    outline: none;
+  }
+
+  ::ng-deep .input-error {
+    border-color: #ef4444 !important;
+  }
+
+  .error-message {
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+  }
+
+  /* Opciones del formulario */
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: -0.5rem;
+  }
+
+  .remember-me {
+    display: flex;
+    align-items: center;
+  }
+
+  .forgot-password {
+    color: #875D4A;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .forgot-password:hover {
+    color: #6d4a3a;
+    text-decoration: underline;
+  }
+
+  /* Botón de login */
+  ::ng-deep .login-button {
+    background: #875D4A !important;
+    border: none !important;
+    padding: 0.875rem 2rem !important;
+    font-size: 1.05rem !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 12px rgba(135, 93, 74, 0.3) !important;
+    transition: all 0.3s ease !important;
+  }
+
+  ::ng-deep .login-button:hover:not(:disabled) {
+    background: #6d4a3a !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(135, 93, 74, 0.4) !important;
+  }
+
+  ::ng-deep .login-button:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  /* Banner de error */
+  .error-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #dc2626;
+    margin-top: 1rem;
+  }
+
+  /* Footer */
+  .form-footer {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  /* Checkbox personalizado */
+  ::ng-deep .p-checkbox .p-checkbox-box.p-highlight {
+    background: #875D4A;
+    border-color: #875D4A;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .login-wrapper {
+      padding: 1rem;
+    }
+
+    .login-card {
+      flex-direction: column;
+      height: auto;
+      max-width: 100%;
+    }
+
+    .login-image-section {
+      min-height: 200px;
+      flex: none;
+    }
+
+    .image-overlay {
+      bottom: 1.5rem;
+      left: 1.5rem;
+    }
+
+    .image-overlay h2 {
+      font-size: 1.5rem !important;
+    }
+
+    .login-form-section {
+      padding: 2rem 1.5rem;
+    }
+
+    .form-header h1 {
+      font-size: 1.5rem !important;
+    }
+  }
+</style>

@@ -1,0 +1,56 @@
+::ng-deep .p-datatable .p-datatable-thead>tr>th {
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.025em;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+::ng-deep .p-datatable .p-datatable-tbody>tr>td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* Hover en filas */
+::ng-deep .p-datatable .hover-row:hover {
+    background-color: #f8fafc !important;
+    transition: background-color 0.2s ease;
+}
+
+/* Card principal */
+::ng-deep .p-card {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+::ng-deep .p-card .p-card-body {
+    padding: 1.5rem;
+}
+
+::ng-deep .p-card .p-card-content {
+    padding: 0;
+}
+
+/* Paginador */
+::ng-deep .p-paginator {
+    border-top: 1px solid #e2e8f0;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 0 0 16px 16px;
+}
+
+/* Skeleton de carga */
+.skeleton-container {
+    padding: 1rem 0;
+}
+
+::ng-deep .p-sortablecolumn {
+    color: #111;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .usuarios-container {
+        padding: 0 0.5rem;
+    }
+}

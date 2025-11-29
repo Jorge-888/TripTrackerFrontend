@@ -1,0 +1,180 @@
+<div class="usuarios-container" style="max-width:1400px;margin:2rem auto;padding:0 1rem;">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" style="margin-bottom:1.5rem;">
+    <ul style="list-style:none;padding:0;display:flex;gap:.5rem;align-items:center;margin:0;">
+      <li *ngFor="let item of breadcrumb; let last = last">
+        <span *ngIf="last" style="font-weight:600;color:#875D4A;">{{ item.label }}</span>
+        <span *ngIf="!last" style="color:#666;margin:0 .5rem;">/</span>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Card principal -->
+  <p-card styleClass="shadow-3">
+    <!-- Header del card -->
+    <ng-template pTemplate="header">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:1.5rem 1.5rem 1rem;">
+        <div>
+          <h2 style="margin:0;color:#111;font-size:1.75rem;font-weight:600;">Usuarios</h2>
+          <!-- <p style="margin:0.5rem 0 0;color:#64748b;font-size:0.95rem;">Gestión de usuarios del sistema</p> -->
+        </div>
+        <div>
+          <p-button [label]="showCreateForm ? 'Cerrar formulario' : 'Nuevo Usuario'"
+            [icon]="showCreateForm ? 'pi pi-times' : 'pi pi-plus'" [rounded]="true" (onClick)="toggleCreateForm()"
+            styleClass="p-button-raised" [style]="{ 
+              'background': '#875D4A', 
+              'border-color': '#875D4A',
+              'box-shadow': '0 4px 6px -1px rgba(135, 93, 74, 0.2), 0 2px 4px -1px rgba(135, 93, 74, 0.1)'
+            }">
+          </p-button>
+        </div>
+      </div>
+    </ng-template>
+
+    <!-- Contenido del card -->
+    <ng-template pTemplate="content">
+      <!-- Formulario de creación -->
+      <div *ngIf="showCreateForm" style="margin-bottom:1.5rem;">
+        <app-create (created)="onUserCreated($event)" (cancel)="onCancelCreate()"></app-create>
+      </div>
+
+      <!-- Tabla de usuarios -->
+      <div *ngIf="!showCreateForm">
+        <!-- Skeleton mientras carga -->
+        <div *ngIf="loading" class="skeleton-container">
+          <p-skeleton height="3rem" styleClass="mb-3"></p-skeleton>
+          <p-skeleton height="2rem" styleClass="mb-2" *ngFor="let i of [1,2,3,4,5]"></p-skeleton>
+        </div>
+
+        <!-- Mensaje cuando no hay usuarios -->
+        <div *ngIf="!loading && usuarios.length === 0"
+          style="text-align:center;padding:3rem;color:#64748b;background:#f8fafc;border-radius:12px;">
+          <i class="pi pi-users" style="font-size:3rem;color:#cbd5e1;margin-bottom:1rem;"></i>
+          <p style="margin:0;font-size:1.1rem;">No hay usuarios para mostrar</p>
+        </div>
+
+        <!-- Tabla con datos -->
+        <p-table *ngIf="!loading && usuarios.length > 0" [value]="usuarios" [tableStyle]="{ 'min-width': '50rem' }"
+          styleClass="p-datatable-gridlines p-datatable-sm" [paginator]="true" [rows]="10"
+          [rowsPerPageOptions]="[10, 25, 50]" [showCurrentPageReport]="true"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} usuarios">
+
+          <!-- Encabezados de la tabla -->
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="background:#875D4A;color:#fff;text-align:center;width:100px;">
+                Acciones
+              </th>
+              <th pSortableColumn="usua_Nombre" style="background:#875D4A;color:#fff;">
+                Nombre
+                <p-sortIcon field="usua_Nombre"></p-sortIcon>
+              </th>
+              <th pSortableColumn="usua_Estado" style="background:#875D4A;color:#fff;text-align:center;width:140px;">
+                Estado
+                <p-sortIcon style="color:#111;" field="usua_Estado"></p-sortIcon>
+              </th>
+            </tr>
+          </ng-template>
+
+          <!-- Filas con los datos -->
+          <ng-template pTemplate="body" let-usuario>
+            <tr class="hover-row">
+              <!-- Menú de acciones con dropdown -->
+              <td style="text-align:center;">
+                <p-button icon="pi pi-ellipsis-v" [rounded]="true" [text]="true" (onClick)="menu.toggle($event)"
+                  [style]="{ 'color': '#111' }">
+
+                </p-button>
+                <p-menu #menu [model]="getActionItems(usuario)" [popup]="true"></p-menu>
+              </td>
+
+              <!-- Nombre del usuario -->
+              <td style="font-weight:500;color:#1e293b;">
+                {{ usuario.usua_Nombre }}
+              </td>
+
+              <!-- Estado con Tag clickeable -->
+              <td style="text-align:center;">
+                <p-tag [value]="usuario.usua_Estado ? 'Activo' : 'Inactivo'"
+                  [severity]="usuario.usua_Estado ? 'success' : 'danger'" [rounded]="true"
+                  (click)="toggleEstado(usuario)" style="cursor:pointer;">
+                </p-tag>
+              </td>
+            </tr>
+          </ng-template>
+
+          <!-- Mensaje cuando no hay resultados -->
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="3" style="text-align:center;padding:2rem;color:#64748b;">
+                No se encontraron usuarios
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </ng-template>
+  </p-card>
+
+</div>
+
+<style>
+  /* Estilos de la tabla */
+  ::ng-deep .p-datatable .p-datatable-thead>tr>th {
+    padding: 1rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.025em;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  ::ng-deep .p-datatable .p-datatable-tbody>tr>td {
+    padding: 1rem;
+    vertical-align: middle;
+  }
+
+  /* Hover en filas */
+  ::ng-deep .p-datatable .hover-row:hover {
+    background-color: #f8fafc !important;
+    transition: background-color 0.2s ease;
+  }
+
+  /* Card principal */
+  ::ng-deep .p-card {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+  }
+
+  ::ng-deep .p-card .p-card-body {
+    padding: 1.5rem;
+  }
+
+  ::ng-deep .p-card .p-card-content {
+    padding: 0;
+  }
+
+  /* Paginador */
+  ::ng-deep .p-paginator {
+    border-top: 1px solid #e2e8f0;
+    padding: 1rem;
+    background: #f8fafc;
+    border-radius: 0 0 16px 16px;
+  }
+
+  /* Skeleton de carga */
+  .skeleton-container {
+    padding: 1rem 0;
+  }
+
+  ::ng-deep .p-sortablecolumn {
+    color: #111;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .usuarios-container {
+      padding: 0 0.5rem;
+    }
+  }
+</style>
