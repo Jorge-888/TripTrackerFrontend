@@ -1,0 +1,223 @@
+<div class="colaboradores-container">
+    <p-card styleClass="colaboradores-card"
+        [style]="{ 'border': '1px solid #e9e2db', 'border-radius': '12px', 'background': 'linear-gradient(to bottom, #ffffff 0%, #fafafa 100%)' }">
+
+        <!-- Header -->
+        <ng-template pTemplate="header">
+            <div style="padding:1.5rem 1.5rem 1rem;display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;">
+                        <i class="pi pi-users" style="font-size:1.5rem;color:#875D4A;"></i>
+                        <h3 style="margin:0;color:#111;font-size:1.5rem;font-weight:600;">Colaboradores</h3>
+                    </div>
+                </div>
+                <div *ngIf="!showCreateForm">
+                    <p-button label="Nuevo Colaborador" icon="pi pi-plus" [rounded]="true"
+                        (onClick)="toggleCreateForm()" styleClass="p-button-raised" [style]="{ 
+              'background': '#875D4A', 
+              'border-color': '#875D4A',
+              'box-shadow': '0 4px 6px -1px rgba(135, 93, 74, 0.2), 0 2px 4px -1px rgba(135, 93, 74, 0.1)'
+            }">
+                    </p-button>
+                </div>
+            </div>
+        </ng-template>
+
+        <!-- Contenido del card -->
+        <ng-template pTemplate="content">
+            <!-- Formulario de creación -->
+            <div *ngIf="showCreateForm" style="margin-bottom:1.5rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                    <h3 style="margin:0;color:#111;font-size:1.25rem;font-weight:600;">
+                        <i class="pi pi-plus-circle" style="color:#875D4A;margin-right:0.5rem;"></i>
+                        Nuevo Colaborador
+                    </h3>
+                    <p-button label="Regresar" icon="pi pi-arrow-left" [outlined]="true" [rounded]="true"
+                        (onClick)="onCancelCreate()" severity="secondary">
+                    </p-button>
+                </div>
+                <app-create (created)="onColaboradorCreated($event)" (cancel)="onCancelCreate()"></app-create>
+            </div>
+
+            <!-- Tabla de colaboradores -->
+            <div *ngIf="!showCreateForm">
+                <!-- Skeleton mientras carga -->
+                <div *ngIf="loading" class="skeleton-container">
+                    <p-skeleton height="3rem" styleClass="mb-3"></p-skeleton>
+                    <p-skeleton height="3rem" styleClass="mb-3"></p-skeleton>
+                    <p-skeleton height="3rem" styleClass="mb-3"></p-skeleton>
+                </div>
+
+                <!-- Filter Input -->
+                <div *ngIf="!loading" style="margin-bottom:1rem;">
+                    <label for="globalFilter"
+                        style="display:block;margin-bottom:0.5rem;color:#334155;font-weight:500;font-size:0.9rem;">
+                        Buscar
+                    </label>
+                    <input pInputText type="text" [(ngModel)]="globalFilterValue" (input)="onGlobalFilter($event)"
+                        placeholder="Buscar en todos los campos..."
+                        style="width:100%;padding:0.75rem;border:1px solid #e2e8f0;border-radius:6px;" />
+                </div>
+
+                <!-- Tabla real -->
+                <p-table #dt *ngIf="!loading" [value]="colaboradores" [tableStyle]="{ 'min-width': '60rem' }"
+                    styleClass="p-datatable-sm" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[5, 10, 20]"
+                    [showCurrentPageReport]="true"
+                    [globalFilterFields]="['colb_DNI', 'colb_Nombres', 'colb_Apellidos', 'colb_Telefono', 'area_Descripcion', 'carg_Descripcion', 'esCi_Descripcion']"
+                    currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} colaboradores">
+
+                    <!-- Cabeceras -->
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width:5%;color:#111;font-weight:600;text-align:center;">Acciones</th>
+                            <th pSortableColumn="colb_DNI" style="width:15%;color:#111;font-weight:600;">
+                                DNI <p-sortIcon field="colb_DNI"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="colb_Nombres" style="width:25%;color:#111;font-weight:600;">
+                                Nombre Completo <p-sortIcon field="colb_Nombres"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="colb_Telefono" style="width:15%;color:#111;font-weight:600;">
+                                Teléfono <p-sortIcon field="colb_Telefono"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="colb_Sexo"
+                                style="width:10%;color:#111;font-weight:600;text-align:center;">
+                                Sexo <p-sortIcon field="colb_Sexo"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="colb_Direccion" style="width:30%;color:#111;font-weight:600;">
+                                Dirección <p-sortIcon field="colb_Direccion"></p-sortIcon>
+                            </th>
+                        </tr>
+                    </ng-template>
+
+                    <!-- Filas con los datos -->
+                    <ng-template pTemplate="body" let-colaborador let-i="rowIndex">
+                        <tr class="hover-row">
+                            <!-- Menú de acciones con dropdown -->
+                            <td style="text-align:center;">
+                                <p-button icon="pi pi-ellipsis-v" [rounded]="true" [text]="true"
+                                    (onClick)="onMenuClick($event, colaborador)" [style]="{ 'color': '#111' }">
+                                </p-button>
+                            </td>
+
+                            <!-- DNI -->
+                            <td style="font-weight:500;color:#1e293b;">
+                                {{ colaborador.colb_DNI }}
+                            </td>
+
+                            <!-- Nombre Completo -->
+                            <td style="font-weight:500;color:#1e293b;">
+                                {{ getNombreCompleto(colaborador) }}
+                            </td>
+
+                            <!-- Teléfono -->
+                            <td style="color:#64748b;">
+                                {{ colaborador.colb_Telefono }}
+                            </td>
+
+                            <!-- Sexo -->
+                            <td style="text-align:center;">
+                                <p-tag [value]="getSexoLabel(colaborador.colb_Sexo)"
+                                    [severity]="colaborador.colb_Sexo === 'M' ? 'info' : 'warn'" [rounded]="true">
+                                </p-tag>
+                            </td>
+
+                            <!-- Dirección -->
+                            <td style="color:#64748b;">
+                                {{ colaborador.colb_Direccion }}
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    <!-- Mensaje cuando no hay datos -->
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="6" style="text-align:center;padding:2rem;color:#64748b;">
+                                <i class="pi pi-inbox"
+                                    style="font-size:3rem;color:#cbd5e1;margin-bottom:1rem;display:block;"></i>
+                                No hay colaboradores registrados
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+                <p-menu #menu [model]="menuItems" [popup]="true"></p-menu>
+            </div>
+        </ng-template>
+    </p-card>
+</div>
+
+<style>
+    .colaboradores-container {
+        padding: 1rem;
+    }
+
+    /* Hover effect en filas */
+    ::ng-deep .hover-row:hover {
+        background-color: rgba(135, 93, 74, 0.05) !important;
+        transition: background-color 0.2s ease;
+    }
+
+    /* Estilos de la tabla */
+    ::ng-deep .p-datatable .p-datatable-thead>tr>th {
+        background: #f8fafc;
+        border-bottom: 2px solid #875D4A;
+        padding: 1rem;
+    }
+
+    ::ng-deep .p-datatable .p-datatable-tbody>tr>td {
+        padding: 0.875rem 1rem;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    /* Paginador */
+    ::ng-deep .p-paginator {
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        padding: 1rem;
+    }
+
+    ::ng-deep .p-paginator .p-paginator-current {
+        color: #64748b;
+    }
+
+    ::ng-deep .p-paginator .p-paginator-pages .p-paginator-page.p-highlight {
+        background: #875D4A;
+        border-color: #875D4A;
+        color: #fff;
+    }
+
+    /* Skeleton */
+    .skeleton-container {
+        padding: 1rem;
+    }
+
+    /* Fix menu items requiring double click */
+    ::ng-deep .p-menu .p-menuitem-link {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+    }
+
+    ::ng-deep .p-menu .p-menuitem {
+        pointer-events: auto !important;
+    }
+
+    ::ng-deep .p-menu .p-menuitem-link .p-menuitem-text,
+    ::ng-deep .p-menu .p-menuitem-link .p-menuitem-icon {
+        pointer-events: none !important;
+    }
+
+    ::ng-deep .p-menu .p-menuitem:not(.p-highlight):not(.p-disabled) .p-menuitem-link:hover {
+        background: rgba(135, 93, 74, 0.1);
+    }
+
+    ::ng-deep .p-menu .p-menuitem.p-focus .p-menuitem-link {
+        background: rgba(135, 93, 74, 0.05);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .colaboradores-container {
+            padding: 0.5rem;
+        }
+    }
+</style>

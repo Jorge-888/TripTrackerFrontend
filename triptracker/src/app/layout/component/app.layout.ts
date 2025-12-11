@@ -24,9 +24,10 @@ import { LayoutService } from '../service/layout.service';
     </div> `
 })
 export class AppLayout {
+    usuarioActual: any;
     overlayMenuOpenSubscription: Subscription;
 
-    menuOutsideClickListener: any;
+    menuOutsideClickListener: any = null;
 
     @ViewChild(AppSidebar) appSidebar!: AppSidebar;
 
@@ -55,6 +56,34 @@ export class AppLayout {
             this.hideMenu();
         });
     }
+
+
+    ngOnInit(): void {
+
+        console.log('pruebalocalst', localStorage.getItem('usuarioActual'));
+        const usuario = localStorage.getItem('usuarioActual');
+
+        console.log('usuario', usuario);
+
+        if (usuario == null) {
+
+            this.router.navigate(['/login']);
+        }
+
+        this.usuarioActual = JSON.parse(usuario!);
+        console.log(this.usuarioActual);
+        // // this.layoutService.layoutState.update((prev) => ({ ...prev, overlayMenuActive: false, staticMenuMobileActive: false, menuHoverActive: false }));
+        // // this.layoutService.layoutState.update((prev) => ({ ...prev, staticMenuMobileActive: true }));
+        // // this.layoutService.layoutState.update((prev) => ({ ...prev, staticMenuDesktopInactive: false }));
+        // // this.layoutService.layoutState.update((prev) => ({ ...prev, staticMenuMobileActive: false }));
+
+        // if (this.usuarioActual === null || this.usuarioActual === undefined) {
+        //     this.router.navigate(['/login']);
+        // }
+
+
+    }
+
 
     isOutsideClicked(event: MouseEvent) {
         const sidebarEl = document.querySelector('.layout-sidebar');

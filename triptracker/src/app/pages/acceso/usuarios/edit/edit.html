@@ -1,0 +1,189 @@
+<p-card styleClass="edit-user-card shadow-2"
+    [style]="{ 'border': '1px solid #e9e2db', 'border-radius': '12px', 'background': 'linear-gradient(to bottom, #ffffff 0%, #fafafa 100%)' }">
+
+    <!-- Header -->
+    <ng-template pTemplate="header">
+        <div style="padding:1.5rem 1.5rem 1rem;">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;">
+                <i class="pi pi-pencil" style="font-size:1.5rem;color:#875D4A;"></i>
+                <h3 style="margin:0;color:#111;font-size:1.5rem;font-weight:600;">Editar Usuario</h3>
+            </div>
+            <p style="margin:0;color:#64748b;font-size:0.95rem;padding-left:2.25rem;">
+                Modifica los datos del usuario
+            </p>
+        </div>
+    </ng-template>
+
+    <!-- Formulario -->
+    <ng-template pTemplate="content">
+        <form #f="ngForm" (ngSubmit)="submit(f)">
+            <div class="form-grid"
+                style="display:grid;grid-template-columns:repeat(2, 1fr);gap:1.5rem;padding:0.5rem 0;">
+
+                <!-- Campo Nombre de usuario -->
+                <div class="field">
+                    <label for="nombre"
+                        style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+                        Nombre de Usuario <span style="color:#ef4444;">*</span>
+                    </label>
+                    <input id="nombre" name="usua_Nombre" [(ngModel)]="usuarioEdit.usua_Nombre" required pInputText
+                        placeholder="Ingresa el nombre de usuario" [style]="{ 'width': '100%' }"
+                        [class.ng-invalid]="isFieldInvalid(f, 'usua_Nombre')"
+                        [class.ng-dirty]="f.controls['usua_Nombre']?.dirty" />
+
+                    <small *ngIf="isFieldInvalid(f, 'usua_Nombre')" class="p-error"
+                        style="display:block;margin-top:0.5rem;">
+                        El nombre de usuario es requerido
+                    </small>
+                </div>
+
+                <!-- espacio sin contrasena para alinear campos-->
+                <div class="field">
+
+                </div>
+
+                <!-- Campo Rol -->
+                <div class="field">
+                    <label for="roleId"
+                        style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+                        Rol <span style="color:#ef4444;">*</span>
+                    </label>
+                    <p-select id="roleId" name="role_Id" [(ngModel)]="usuarioEdit.role_Id" required [options]="roles"
+                        optionLabel="role_Descripcion" optionValue="role_Id" placeholder="Selecciona un rol"
+                        [filter]="true" [style]="{ 'width': '100%' }" [class.ng-invalid]="isFieldInvalid(f, 'role_Id')"
+                        [class.ng-dirty]="f.controls['role_Id']?.dirty">
+                    </p-select>
+                    <small *ngIf="isFieldInvalid(f, 'role_Id')" class="p-error"
+                        style="display:block;margin-top:0.5rem;">
+                        Selecciona un rol
+                    </small>
+                </div>
+
+                <!-- Campo Colaborador -->
+                <div class="field">
+                    <label for="colbId"
+                        style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+                        Colaborador <span style="color:#ef4444;">*</span>
+                    </label>
+                    <p-select id="colbId" name="colb_Id" [(ngModel)]="usuarioEdit.colb_Id" required
+                        [options]="colaboradores" optionValue="colb_Id" optionLabel="colb_Nombres"
+                        placeholder="Selecciona un colaborador" [filter]="true"
+                        filterBy="colb_Nombres,colb_Apellidos,colb_DNI" [style]="{ 'width': '100%' }"
+                        [class.ng-invalid]="isFieldInvalid(f, 'colb_Id')"
+                        [class.ng-dirty]="f.controls['colb_Id']?.dirty">
+                        <ng-template let-colaborador pTemplate="item">
+                            {{ getColaboradorLabel(colaborador) }}
+                        </ng-template>
+                        <ng-template let-colaborador pTemplate="selectedItem">
+                            {{ getColaboradorLabel(colaborador) }}
+                        </ng-template>
+                    </p-select>
+                    <small *ngIf="isFieldInvalid(f, 'colb_Id')" class="p-error"
+                        style="display:block;margin-top:0.5rem;">
+                        Selecciona un colaborador
+                    </small>
+                </div>
+
+                <!-- Toggle Administrador -->
+                <div class="field"
+                    style="grid-column:1 / -1;display:flex;align-items:center;gap:1rem;padding:1rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
+                    <p-toggleswitch id="adminSwitch" name="usua_Admin" [(ngModel)]="usuarioEdit.usua_Admin">
+                    </p-toggleswitch>
+                    <label for="adminSwitch" style="margin:0;color:#334155;font-weight:500;cursor:pointer;">
+                        Gerente - Administrador
+                    </label>
+                    <i class="pi pi-info-circle" style="margin-left:auto;color:#64748b;cursor:help;"
+                        title="Los administradores tienen acceso completo al sistema">
+                    </i>
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div
+                style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #e2e8f0;">
+                <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [outlined]="true" [rounded]="true"
+                    type="button" (onClick)="onCancel()" [style]="{ 'padding': '0.75rem 1.5rem' }">
+                </p-button>
+
+                <p-button [label]="saving ? 'Guardando...' : 'Actualizar Usuario'"
+                    [icon]="saving ? 'pi pi-spin pi-spinner' : 'pi pi-check'" [rounded]="true" [raised]="true"
+                    type="submit" [disabled]="saving" [style]="{ 
+            'background': '#875D4A', 
+            'border-color': '#875D4A',
+            'padding': '0.75rem 1.5rem',
+            'box-shadow': '0 4px 6px -1px rgba(135, 93, 74, 0.2), 0 2px 4px -1px rgba(135, 93, 74, 0.1)'
+          }">
+                </p-button>
+            </div>
+        </form>
+    </ng-template>
+</p-card>
+
+<style>
+    /* Inputs del formulario */
+    ::ng-deep .edit-user-card .p-inputtext,
+    ::ng-deep .edit-user-card .p-select {
+        border-radius: 8px;
+        border: 1px solid #cbd5e1;
+        padding: 0.75rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    ::ng-deep .edit-user-card .p-inputtext:focus,
+    ::ng-deep .edit-user-card .p-select:not(.p-disabled):hover,
+    ::ng-deep .edit-user-card .p-select.p-focus {
+        border-color: #875D4A;
+        box-shadow: 0 0 0 3px rgba(135, 93, 74, 0.1);
+    }
+
+    /* Estados de error */
+    ::ng-deep .edit-user-card .ng-invalid.ng-dirty,
+    ::ng-deep .edit-user-card .p-select.ng-invalid.ng-dirty {
+        border-color: #ef4444 !important;
+    }
+
+    ::ng-deep .edit-user-card .ng-invalid.ng-dirty:focus,
+    ::ng-deep .edit-user-card .p-select.ng-invalid.ng-dirty.p-focus {
+        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+    }
+
+    /* Select panel */
+    ::ng-deep .p-select-overlay {
+        border-radius: 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    ::ng-deep .p-select-overlay .p-select-option.p-select-option-selected {
+        background: #875D4A;
+        color: #fff;
+    }
+
+    ::ng-deep .p-select-overlay .p-select-option:not(.p-select-option-selected):hover {
+        background: rgba(135, 93, 74, 0.1);
+    }
+
+    /* InputSwitch personalizado */
+    ::ng-deep .p-inputswitch.p-inputswitch-checked .p-inputswitch-slider {
+        background: #875D4A;
+    }
+
+    /* Efectos hover en botones */
+    ::ng-deep .p-button:hover {
+        transform: translateY(-1px);
+        transition: all 0.2s ease;
+    }
+
+    /* Sombra del card */
+    ::ng-deep .edit-user-card.p-card {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1rem !important;
+        }
+    }
+</style>

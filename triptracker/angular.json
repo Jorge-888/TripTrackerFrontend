@@ -29,10 +29,16 @@
                             {
                                 "glob": "**/*",
                                 "input": "public"
+                            },
+                            {
+                                "glob": "**/*",
+                                "input": "src/assets",
+                                "output": "assets"
                             }
                         ],
                         "styles": [
-                            "src/assets/styles.scss"
+                            "src/assets/styles.scss",
+                            "node_modules/ngx-toastr/toastr.css"
                         ],
                         "scripts": []
                     },
@@ -76,6 +82,11 @@
                             {
                                 "glob": "**/*",
                                 "input": "public"
+                            },
+                            {
+                                "glob": "**/*",
+                                "input": "src/assets",
+                                "output": "assets"
                             }
                         ],
                         "styles": [
@@ -88,6 +99,6 @@
         }
     },
     "cli": {
-      "analytics": false
+        "analytics": false
     }
 }

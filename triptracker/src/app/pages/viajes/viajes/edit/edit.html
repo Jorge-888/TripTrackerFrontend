@@ -1,0 +1,227 @@
+<p-card styleClass="edit-viaje-card shadow-2"
+    [style]="{ 'border': '1px solid #e9e2db', 'border-radius': '12px', 'background': 'linear-gradient(to bottom, #ffffff 0%, #fafafa 100%)' }">
+
+    <ng-template pTemplate="header">
+        <div style="padding:1.5rem 1.5rem 1rem;">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.5rem;">
+                <i class="pi pi-pencil" style="font-size:1.5rem;color:#875D4A;"></i>
+                <h3 style="margin:0;color:#111;font-size:1.5rem;font-weight:600;">Editar Viaje</h3>
+            </div>
+            <p style="margin:0;color:#64748b;font-size:0.95rem;padding-left:2.25rem;">
+                Modifica los campos necesarios para actualizar el viaje
+            </p>
+        </div>
+    </ng-template>
+
+    <ng-template pTemplate="content">
+        <form #f="ngForm" (ngSubmit)="submit(f)">
+            <div class="form-grid"
+                style="display:grid;grid-template-columns:repeat(3, 1fr);gap:1.5rem;padding:0.5rem 0;">
+
+                <div class="field">
+                    <label for="fecha"
+                        style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+                        Fecha <span style="color:#ef4444;">*</span>
+                    </label>
+                    <p-datepicker id="fecha" name="viaj_Fecha" [(ngModel)]="viaje.viaj_Fecha"
+                        (onSelect)="onFechaChange()" [showIcon]="true" dateFormat="dd/mm/yy"
+                        placeholder="Selecciona fecha" [style]="{ 'width': '100%' }">
+                    </p-datepicker>
+                </div>
+
+                <div class="field">
+                    <label for="sucursal"
+                        style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+                        Sucursal <span style="color:#ef4444;">*</span>
+                    </label>
+                    <p-select id="sucursal" name="sucu_Id" [(ngModel)]="viaje.sucu_Id" (onChange)="onSucursalChange()"
+                        [options]="sucursales" optionLabel="sucu_Descripcion" optionValue="sucu_Id"
+                        placeholder="Selecciona sucursal" [filter]="true" [style]="{ 'width': '100%' }">
+                    </p-select>
+                </div>
+
+                <div class="field">
+                    <label for="transportista"
+                        style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+                        Transportista <span style="color:#ef4444;">*</span>
+                    </label>
+                    <p-select id="transportista" name="trpo_Id" [(ngModel)]="viaje.trpo_Id"
+                        (onChange)="onTransportistaChange()" [options]="transportistas" optionValue="trpo_Id"
+                        placeholder="Selecciona transportista" [filter]="true"
+                        filterBy="trpo_DNI,trpo_Nombres,trpo_Apellidos,trpo_Placa" [style]="{ 'width': '100%' }">
+                        <ng-template let-transportista pTemplate="item">
+                            {{ transportista.trpo_DNI }} - {{ getTransportistaNombre(transportista) }} - {{
+                            transportista.trpo_Placa }}
+                        </ng-template>
+                        <ng-template let-transportista pTemplate="selectedItem">
+                            {{ transportista.trpo_DNI }} - {{ getTransportistaNombre(transportista) }}
+                        </ng-template>
+                    </p-select>
+                </div>
+            </div>
+
+            <div *ngIf="selectedTransportista"
+                style="display:grid;grid-template-columns:repeat(3, 1fr);gap:1.5rem;margin-top:1rem;padding:1rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
+                <div>
+                    <p style="margin:0;color:#64748b;font-size:0.85rem;font-weight:500;">Tarifa por KM</p>
+                    <p style="margin:0.25rem 0 0;color:#111;font-size:1.125rem;font-weight:600;">
+                        L {{ originalTarifaKM | number:'1.2-2' }}
+                    </p>
+                    <p *ngIf="tarifaChanged"
+                        style="margin:0.25rem 0 0;color:#f59e0b;font-size:0.75rem;font-weight:500;">
+                        <i class="pi pi-exclamation-triangle" style="font-size:0.75rem;"></i>
+                        Tarifa actual: L {{ selectedTransportista.trpo_TarifaKM | number:'1.2-2' }}
+                    </p>
+                </div>
+                <div>
+                    <p style="margin:0;color:#64748b;font-size:0.85rem;font-weight:500;">Placa</p>
+                    <p style="margin:0.25rem 0 0;color:#111;font-size:1.125rem;font-weight:600;">
+                        {{ selectedTransportista.trpo_Placa }}
+                    </p>
+                </div>
+                <div>
+                    <p style="margin:0;color:#64748b;font-size:0.85rem;font-weight:500;">Vehículo</p>
+                    <p style="margin:0.25rem 0 0;color:#111;font-size:1.125rem;font-weight:600;">
+                        {{ selectedTransportista.trpo_Vehiculo }}
+                    </p>
+                </div>
+            </div>
+
+            <div *ngIf="viaje.sucu_Id"
+                style="margin-top:2rem;padding:1.5rem;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;">
+                <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem;">
+                    <i class="pi pi-users" style="font-size:1.25rem;color:#875D4A;"></i>
+                    <h4 style="margin:0;color:#111;font-size:1.125rem;font-weight:600;">Colaboradores Disponibles</h4>
+                    <span style="color:#ef4444;font-size:0.875rem;margin-left:0.25rem;">*</span>
+                </div>
+
+                <div *ngIf="loadingColaboradores" style="text-align:center;padding:2rem;">
+                    <i class="pi pi-spin pi-spinner" style="font-size:2rem;color:#875D4A;"></i>
+                    <p style="margin:0.5rem 0 0;color:#64748b;">Cargando colaboradores...</p>
+                </div>
+
+                <div *ngIf="!loadingColaboradores && colaboradores.length === 0"
+                    style="text-align:center;padding:2rem;">
+                    <i class="pi pi-inbox" style="font-size:2rem;color:#cbd5e1;"></i>
+                    <p style="margin:0.5rem 0 0;color:#64748b;">No hay colaboradores disponibles en esta sucursal</p>
+                </div>
+
+                <div *ngIf="!loadingColaboradores && colaboradores.length > 0">
+                    <div style="display:grid;grid-template-columns:repeat(2, 1fr);gap:1rem;">
+                        <div *ngFor="let colaborador of colaboradores"
+                            [class.selected-card]="colaborador.selected && !colaborador.disabled"
+                            [class.disabled-card]="colaborador.disabled" (click)="onColaboradorToggle(colaborador)"
+                            style="padding:1rem;background:white;border-radius:8px;border:2px solid #e2e8f0;cursor:pointer;transition:all 0.2s ease;">
+                            <div style="display:flex;align-items:start;gap:1rem;">
+                                <p-checkbox [(ngModel)]="colaborador.selected" [ngModelOptions]="{standalone: true}"
+                                    [binary]="true" [disabled]="colaborador.disabled"
+                                    (onChange)="calculateDistanciaTotal()" (click)="$event.stopPropagation()">
+                                </p-checkbox>
+                                <div style="flex:1;">
+                                    <div style="display:flex;justify-content:space-between;align-items:start;">
+                                        <div>
+                                            <p style="margin:0;color:#111;font-weight:600;font-size:0.95rem;">
+                                                {{ getColaboradorNombre(colaborador) }}
+                                            </p>
+                                            <p style="margin:0.25rem 0 0;color:#64748b;font-size:0.85rem;">
+                                                {{ colaborador.colb_DNI }}
+                                            </p>
+                                        </div>
+                                        <div style="text-align:right;">
+                                            <p style="margin:0;color:#875D4A;font-weight:600;font-size:0.95rem;">
+                                                {{ colaborador.suCo_DistanciaCasa }} km
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top:0.5rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+                                        <span
+                                            style="padding:0.25rem 0.5rem;background:#f1f5f9;border-radius:4px;font-size:0.75rem;color:#64748b;">
+                                            {{ colaborador.area_Descripcion }}
+                                        </span>
+                                        <span
+                                            style="padding:0.25rem 0.5rem;background:#f1f5f9;border-radius:4px;font-size:0.75rem;color:#64748b;">
+                                            {{ colaborador.carg_Descripcion }}
+                                        </span>
+                                    </div>
+                                    <p *ngIf="colaborador.disabled"
+                                        style="margin:0.5rem 0 0;color:#ef4444;font-size:0.8rem;font-weight:500;">
+                                        Ya asignado en esta fecha
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div
+                        style="margin-top:1.5rem;padding:1rem;background:white;border-radius:8px;border:1px solid #e2e8f0;">
+                        <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:1rem;">
+                            <div>
+                                <p style="margin:0;color:#64748b;font-size:0.85rem;font-weight:500;">Colaboradores
+                                    Seleccionados</p>
+                                <p style="margin:0.25rem 0 0;color:#111;font-size:1.25rem;font-weight:600;">
+                                    {{ getSelectedCount() }}
+                                </p>
+                            </div>
+                            <div>
+                                <p style="margin:0;color:#64748b;font-size:0.85rem;font-weight:500;">Distancia Total</p>
+                                <p style="margin:0.25rem 0 0;font-size:1.25rem;font-weight:600;"
+                                    [style.color]="distanciaExcedida ? '#ef4444' : '#111'">
+                                    {{ totalDistancia | number:'1.2-2' }} km
+                                </p>
+                                <p *ngIf="distanciaExcedida"
+                                    style="margin:0.25rem 0 0;color:#ef4444;font-size:0.8rem;font-weight:500;">
+                                    Excede el límite de 100 km
+                                </p>
+                            </div>
+                            <div>
+                                <p style="margin:0;color:#64748b;font-size:0.85rem;font-weight:500;">Tarifa Total</p>
+                                <p style="margin:0.25rem 0 0;color:#875D4A;font-size:1.25rem;font-weight:600;">
+                                    L {{ tarifaTotal | number:'1.2-2' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="display:flex;gap:0.75rem;justify-content:flex-end;margin-top:2rem;padding-top:1.5rem;border-top:1px solid #e2e8f0;">
+                <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [outlined]="true" [rounded]="true"
+                    type="button" (onClick)="onCancel()" [style]="{ 'padding': '0.75rem 1.5rem' }">
+                </p-button>
+
+                <p-button [label]="saving ? 'Actualizando...' : 'Actualizar Viaje'"
+                    [icon]="saving ? 'pi pi-spin pi-spinner' : 'pi pi-check'" [rounded]="true" [raised]="true"
+                    type="submit" [disabled]="saving || loadingData || distanciaExcedida" [style]="{ 
+            'background': '#875D4A', 
+            'border-color': '#875D4A',
+            'padding': '0.75rem 1.5rem',
+            'box-shadow': '0 4px 6px -1px rgba(135, 93, 74, 0.2), 0 2px 4px -1px rgba(135, 93, 74, 0.1)'
+          }">
+                </p-button>
+            </div>
+        </form>
+    </ng-template>
+</p-card>
+
+<style>
+    .selected-card {
+        border-color: #875D4A !important;
+        background: rgba(135, 93, 74, 0.05) !important;
+    }
+
+    .disabled-card {
+        opacity: 0.6;
+        cursor: not-allowed !important;
+    }
+
+    .disabled-card:hover {
+        border-color: #e2e8f0 !important;
+    }
+
+    .selected-card:hover,
+    div[style*="cursor:pointer"]:not(.disabled-card):hover {
+        border-color: #875D4A !important;
+        box-shadow: 0 2px 8px rgba(135, 93, 74, 0.1);
+    }
+</style>

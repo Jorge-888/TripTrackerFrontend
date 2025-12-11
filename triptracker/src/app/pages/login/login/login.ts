@@ -13,6 +13,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { Usuarios } from '../../../models/usuariosModel';
 
 
+
 @Component({
   selector: 'app-login',
   imports: [
@@ -30,16 +31,18 @@ import { Usuarios } from '../../../models/usuariosModel';
 export class LoginComponent {
 
   usuario = new Usuarios;
-  
+
 
   rememberMe = false;
   loading = false;
   errorMessage = '';
 
+  // logoPath = new URL('/assets/images/busLogin.png', import.meta.url).href;
+
   constructor(
     private http: HttpClient,
     private router: Router
-  ) {}
+  ) { }
 
   onSubmit(form: NgForm): void {
     if (form.invalid) {
@@ -56,20 +59,21 @@ export class LoginComponent {
     }).subscribe({
       next: response => {
         this.loading = false;
-        
+
         console.log('Respuesta del login:', response);
         if (response.usua_Id > 0) {
           localStorage.setItem('usuarioActual', JSON.stringify(response));
+          localStorage.setItem('userId', response.usua_Id.toString());
         }
-        
 
-        
-        this.router.navigate(['/dashboard']);
+
+
+        this.router.navigate(['/']);
       },
       error: err => {
         this.loading = false;
         console.error('Error al iniciar sesión', err);
-        
+
         // Personalizar mensaje según el código de error
         if (err.status === 401) {
           this.errorMessage = 'Usuario o contraseña incorrectos';
@@ -88,7 +92,7 @@ export class LoginComponent {
   }
 
   ngOnInit(): void {
-    
-    
+
+
   }
 }

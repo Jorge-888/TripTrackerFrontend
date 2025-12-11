@@ -1,0 +1,418 @@
+<div class="home-container" style="max-width:1400px;margin:2rem auto;padding:0 1rem;">
+
+    <!-- Header de bienvenida -->
+    <div class="welcome-header" style="margin-bottom:2rem;">
+        <h1 style="margin:0;color:#111;font-size:2rem;font-weight:700;">
+            Bienvenido{{ usuarioActual ? ', ' + usuarioActual.usua_Nombre : '' }}
+        </h1>
+        <!-- <p style="margin:0.5rem 0 0;color:#64748b;font-size:1rem;">
+            Panel de control - TripTracker
+        </p> -->
+    </div>
+
+    <!-- Skeleton mientras carga -->
+    <div *ngIf="loading" class="skeleton-container">
+        <div class="grid"
+            style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:1.5rem;margin-bottom:2rem;">
+            <p-skeleton height="120px" *ngFor="let i of [1,2,3,4]"></p-skeleton>
+        </div>
+        <p-skeleton height="300px" styleClass="mb-3"></p-skeleton>
+        <p-skeleton height="300px"></p-skeleton>
+    </div>
+
+    <!-- Contenido del dashboard -->
+    <div *ngIf="!loading">
+
+        <!-- Tarjetas de estadísticas -->
+        <div class="stats-grid"
+            style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:1.5rem;margin-bottom:2rem;">
+
+            <!-- Total Viajes -->
+            <!-- <p-card styleClass="stat-card">
+                <div class="stat-content" style="display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <p style="margin:0;color:#64748b;font-size:0.9rem;font-weight:500;">Total Viajes</p>
+                        <h2 style="margin:0.5rem 0 0;color:#111;font-size:2rem;font-weight:700;">{{ stats.totalViajes }}
+                        </h2>
+                    </div>
+                    <div class="stat-icon"
+                        style="width:60px;height:60px;border-radius:12px;background:rgba(135, 93, 74, 0.1);display:flex;align-items:center;justify-content:center;">
+                        <i class="pi pi-map" style="font-size:1.8rem;color:#875D4A;"></i>
+                    </div>
+                </div>
+            </p-card> -->
+
+            <!-- Viajes Activos -->
+            <!-- <p-card styleClass="stat-card">
+                <div class="stat-content" style="display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <p style="margin:0;color:#64748b;font-size:0.9rem;font-weight:500;">Viajes Activos</p>
+                        <h2 style="margin:0.5rem 0 0;color:#111;font-size:2rem;font-weight:700;">{{ stats.viajesActivos
+                            }}</h2>
+                    </div>
+                    <div class="stat-icon"
+                        style="width:60px;height:60px;border-radius:12px;background:rgba(59, 130, 246, 0.1);display:flex;align-items:center;justify-content:center;">
+                        <i class="pi pi-compass" style="font-size:1.8rem;color:#3b82f6;"></i>
+                    </div>
+                </div>
+            </p-card> -->
+
+            <!-- Viajes Completados -->
+            <!-- <p-card styleClass="stat-card">
+                <div class="stat-content" style="display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <p style="margin:0;color:#64748b;font-size:0.9rem;font-weight:500;">Completados</p>
+                        <h2 style="margin:0.5rem 0 0;color:#111;font-size:2rem;font-weight:700;">{{
+                            stats.viajesCompletados }}</h2>
+                    </div>
+                    <div class="stat-icon"
+                        style="width:60px;height:60px;border-radius:12px;background:rgba(34, 197, 94, 0.1);display:flex;align-items:center;justify-content:center;">
+                        <i class="pi pi-check-circle" style="font-size:1.8rem;color:#22c55e;"></i>
+                    </div>
+                </div>
+            </p-card> -->
+
+            <!-- Total Usuarios -->
+            <p-card styleClass="stat-card">
+                <div class="stat-content" style="display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <p style="margin:0;color:#64748b;font-size:0.9rem;font-weight:500;">Usuarios</p>
+                        <h2 style="margin:0.5rem 0 0;color:#111;font-size:2rem;font-weight:700;">{{ stats.totalUsuarios
+                            }}</h2>
+                    </div>
+                    <div class="stat-icon"
+                        style="width:60px;height:60px;border-radius:12px;background:rgba(168, 85, 247, 0.1);display:flex;align-items:center;justify-content:center;">
+                        <i class="pi pi-users" style="font-size:1.8rem;color:#a855f7;"></i>
+                    </div>
+                </div>
+            </p-card>
+
+            <!-- Total Sucursales -->
+            <p-card styleClass="stat-card">
+                <div class="stat-content" style="display:flex;align-items:center;justify-content:space-between;">
+                    <div>
+                        <p style="margin:0;color:#64748b;font-size:0.9rem;font-weight:500;">Sucursales</p>
+                        <h2 style="margin:0.5rem 0 0;color:#111;font-size:2rem;font-weight:700;">{{
+                            stats.totalSucursales
+                            }}</h2>
+                    </div>
+                    <div class="stat-icon"
+                        style="width:60px;height:60px;border-radius:12px;background:rgba(234, 179, 8, 0.1);display:flex;align-items:center;justify-content:center;">
+                        <i class="pi pi-building" style="font-size:1.8rem;color:#eab308;"></i>
+                    </div>
+                </div>
+            </p-card>
+
+        </div>
+
+        <!-- Hero Section with Gradient -->
+        <div
+            style="background:linear-gradient(135deg, #875D4A 0%, #6b4a3a 100%);border-radius:16px;padding:3rem 2rem;margin-bottom:2rem;box-shadow:0 10px 25px rgba(135, 93, 74, 0.2);">
+            <div style="text-align:center;color:white;">
+                <i class="pi pi-map-marker" style="font-size:3.5rem;margin-bottom:1rem;opacity:0.9;"></i>
+                <h2 style="margin:0 0 1rem;font-size:2.5rem;font-weight:700;">TripTracker</h2>
+                <p style="margin:0;font-size:1.125rem;opacity:0.95;max-width:600px;margin:0 auto;">
+                    Sistema integral de gestión de viajes y colaboradores
+                </p>
+            </div>
+        </div>
+
+        <!-- Quick Access Cards -->
+        <div style="margin-bottom:2rem;">
+            <h3 style="margin:0 0 1.5rem;color:#111;font-size:1.5rem;font-weight:600;">Acceso Rápido</h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:1.5rem;">
+
+                <!-- Usuarios Card -->
+                <div style="cursor:pointer;" (click)="navigateToUsuarios()">
+                    <p-card styleClass="quick-access-card">
+                        <div style="text-align:center;padding:1rem;">
+                            <div
+                                style="width:80px;height:80px;border-radius:50%;background:rgba(168, 85, 247, 0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                                <i class="pi pi-users" style="font-size:2.5rem;color:#a855f7;"></i>
+                            </div>
+                            <h4 style="margin:0 0 0.5rem;color:#111;font-size:1.25rem;font-weight:600;">Gestión de
+                                Usuarios
+                            </h4>
+                            <p style="margin:0;color:#64748b;font-size:0.95rem;">Administra usuarios y permisos del
+                                sistema
+                            </p>
+                        </div>
+                    </p-card>
+                </div>
+
+                <!-- Colaboradores Card -->
+                <div style="cursor:pointer;" (click)="navigateToColaboradores()">
+                    <p-card styleClass="quick-access-card">
+                        <div style="text-align:center;padding:1rem;">
+                            <div
+                                style="width:80px;height:80px;border-radius:50%;background:rgba(234, 179, 8, 0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                                <i class="pi pi-id-card" style="font-size:2.5rem;color:#eab308;"></i>
+                            </div>
+                            <h4 style="margin:0 0 0.5rem;color:#111;font-size:1.25rem;font-weight:600;">Colaboradores
+                            </h4>
+                            <p style="margin:0;color:#64748b;font-size:0.95rem;">Gestiona información de colaboradores
+                            </p>
+                        </div>
+                    </p-card>
+                </div>
+
+                <!-- Viajes Card -->
+                <div style="cursor:pointer;" (click)="navigateToViajes()">
+                    <p-card styleClass="quick-access-card">
+                        <div style="text-align:center;padding:1rem;">
+                            <div
+                                style="width:80px;height:80px;border-radius:50%;background:rgba(135, 93, 74, 0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                                <i class="pi pi-map" style="font-size:2.5rem;color:#875D4A;"></i>
+                            </div>
+                            <h4 style="margin:0 0 0.5rem;color:#111;font-size:1.25rem;font-weight:600;">Gestión de
+                                Viajes
+                            </h4>
+                            <p style="margin:0;color:#64748b;font-size:0.95rem;">Administra viajes y transportistas</p>
+                        </div>
+                    </p-card>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Feature Highlights -->
+        <div style="margin-bottom:2rem;">
+            <h3 style="margin:0 0 1.5rem;color:#111;font-size:1.5rem;font-weight:600;">Características del Sistema</h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:1.5rem;">
+
+                <!-- Feature 1 -->
+                <div
+                    style="display:flex;gap:1rem;padding:1.5rem;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;">
+                    <div style="flex-shrink:0;">
+                        <div
+                            style="width:50px;height:50px;border-radius:10px;background:rgba(34, 197, 94, 0.1);display:flex;align-items:center;justify-content:center;">
+                            <i class="pi pi-shield" style="font-size:1.5rem;color:#22c55e;"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 style="margin:0 0 0.5rem;color:#111;font-weight:600;">Seguro y Confiable</h5>
+                        <p style="margin:0;color:#64748b;font-size:0.9rem;">Control de acceso basado en roles</p>
+                    </div>
+                </div>
+
+                <!-- Feature 2 -->
+                <div
+                    style="display:flex;gap:1rem;padding:1.5rem;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;">
+                    <div style="flex-shrink:0;">
+                        <div
+                            style="width:50px;height:50px;border-radius:10px;background:rgba(59, 130, 246, 0.1);display:flex;align-items:center;justify-content:center;">
+                            <i class="pi pi-chart-line" style="font-size:1.5rem;color:#3b82f6;"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 style="margin:0 0 0.5rem;color:#111;font-weight:600;">Reportes en Tiempo Real</h5>
+                        <p style="margin:0;color:#64748b;font-size:0.9rem;">Estadísticas actualizadas al instante</p>
+                    </div>
+                </div>
+
+                <!-- Feature 3 -->
+                <div
+                    style="display:flex;gap:1rem;padding:1.5rem;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0;">
+                    <div style="flex-shrink:0;">
+                        <div
+                            style="width:50px;height:50px;border-radius:10px;background:rgba(135, 93, 74, 0.1);display:flex;align-items:center;justify-content:center;">
+                            <i class="pi pi-mobile" style="font-size:1.5rem;color:#875D4A;"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h5 style="margin:0 0 0.5rem;color:#111;font-weight:600;">Diseño Responsivo</h5>
+                        <p style="margin:0;color:#64748b;font-size:0.9rem;">Accede desde cualquier dispositivo</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Gráfico y Acciones Rápidas (Comentado) -->
+        <!-- <div class="grid" style="display:grid;grid-template-columns:1fr;gap:1.5rem;margin-bottom:2rem;"> -->
+
+        <!-- Gráfico de viajes -->
+        <!-- <p-card>
+            <ng-template pTemplate="header">
+                <div style="padding:1.5rem 1.5rem 0;">
+                    <h3 style="margin:0;color:#111;font-size:1.25rem;font-weight:600;">Viajes por Mes</h3>
+                    <p style="margin:0.25rem 0 0;color:#64748b;font-size:0.9rem;">Últimos 6 meses</p>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <div style="height:350px;padding:0 1rem 1.5rem 1rem;">
+                    <p-chart type="line" [data]="chartData" [options]="chartOptions"></p-chart>
+                </div>
+            </ng-template>
+        </p-card> -->
+
+    </div>
+
+    <!-- Viajes Recientes y Acciones Rápidas -->
+    <!-- <div class="grid" style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;"> -->
+
+    <!-- Tabla de viajes recientes -->
+    <!-- <p-card>
+            <ng-template pTemplate="header">
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:1.5rem 1.5rem 0;">
+                    <div>
+                        <h3 style="margin:0;color:#111;font-size:1.25rem;font-weight:600;">Viajes Recientes</h3>
+                        <p style="margin:0.25rem 0 0;color:#64748b;font-size:0.9rem;">Últimos 5 viajes registrados
+                        </p>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <p-table [value]="recentTrips" [tableStyle]="{ 'min-width': '100%' }" styleClass="p-datatable-sm">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="background:#875D4A;color:#fff;">Destino</th>
+                            <th style="background:#875D4A;color:#fff;">Fecha</th>
+                            <th style="background:#875D4A;color:#fff;text-align:center;">Pasajeros</th>
+                            <th style="background:#875D4A;color:#fff;text-align:center;">Estado</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-trip>
+                        <tr class="hover-row">
+                            <td style="font-weight:500;color:#1e293b;">{{ trip.destino }}</td>
+                            <td style="color:#64748b;">{{ formatDate(trip.fecha) }}</td>
+                            <td style="text-align:center;color:#64748b;">{{ trip.pasajeros }}</td>
+                            <td style="text-align:center;">
+                                <p-tag [value]="trip.estado" [severity]="getEstadoSeverity(trip.estado)"
+                                    [rounded]="true"></p-tag>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </ng-template>
+        </p-card> -->
+
+    <!-- Acciones rápidas -->
+    <!-- <p-card>
+            <ng-template pTemplate="header">
+                <div style="padding:1.5rem 1.5rem 0;">
+                    <h3 style="margin:0;color:#111;font-size:1.25rem;font-weight:600;">Acciones Rápidas</h3>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="content">
+                <div style="display:flex;flex-direction:column;gap:1rem;">
+
+                    <p-button label="Gestionar Usuarios" icon="pi pi-users" (onClick)="navigateToUsuarios()" [style]="{ 
+                'width': '100%',
+                'background': '#875D4A',
+                'border-color': '#875D4A',
+                'justify-content': 'flex-start'
+              }" styleClass="p-button-raised">
+                    </p-button>
+
+                    <p-button label="Ver Viajes" icon="pi pi-map" (onClick)="navigateToViajes()" [style]="{ 
+                'width': '100%',
+                'background': '#3b82f6',
+                'border-color': '#3b82f6',
+                'justify-content': 'flex-start'
+              }" styleClass="p-button-raised">
+                    </p-button>
+
+                    <p-button label="Nuevo Viaje" icon="pi pi-plus-circle" (onClick)="navigateToViajes()" [style]="{ 
+                'width': '100%',
+                'background': '#22c55e',
+                'border-color': '#22c55e',
+                'justify-content': 'flex-start'
+              }" styleClass="p-button-raised">
+                    </p-button>
+
+                    <p-button label="Reportes" icon="pi pi-chart-bar" [style]="{ 
+                'width': '100%',
+                'background': '#a855f7',
+                'border-color': '#a855f7',
+                'justify-content': 'flex-start'
+              }" styleClass="p-button-raised">
+                    </p-button>
+
+                </div>
+            </ng-template>
+        </p-card> -->
+
+</div>
+
+<!-- </div>
+
+</div> -->
+
+<style>
+    /* Card de estadísticas */
+    ::ng-deep .stat-card .p-card-body {
+        padding: 1.5rem;
+    }
+
+    ::ng-deep .stat-card .p-card-content {
+        padding: 0;
+    }
+
+    ::ng-deep .stat-card {
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+    }
+
+    ::ng-deep .stat-card:hover {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+
+    /* Cards generales */
+    ::ng-deep .p-card {
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+    }
+
+    ::ng-deep .p-card .p-card-body {
+        padding: 1.5rem;
+    }
+
+    ::ng-deep .p-card .p-card-content {
+        padding: 0;
+    }
+
+    /* Tabla */
+    ::ng-deep .p-datatable .p-datatable-thead>tr>th {
+        padding: 1rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.025em;
+    }
+
+    ::ng-deep .p-datatable .p-datatable-tbody>tr>td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    ::ng-deep .p-datatable .hover-row:hover {
+        background-color: #f8fafc !important;
+        transition: background-color 0.2s ease;
+    }
+
+    /* Skeleton de carga */
+    .skeleton-container {
+        padding: 1rem 0;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+        .grid[style*="2fr 1fr"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .home-container {
+            padding: 0 0.5rem;
+            margin: 1rem auto;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+            gap: 1rem !important;
+        }
+    }
+</style>

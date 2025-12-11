@@ -19,18 +19,18 @@
     <form #f="ngForm" (ngSubmit)="submit(f)">
       <div class="form-grid" style="display:grid;grid-template-columns:repeat(2, 1fr);gap:1.5rem;padding:0.5rem 0;">
 
-        <!-- Campo Nombre -->
+        <!-- Campo Nombre de usuario -->
         <div class="field">
           <label for="nombre"
             style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
-            Nombre <span style="color:#ef4444;">*</span>
+            Nombre de Usuario <span style="color:#ef4444;">*</span>
           </label>
-          <input id="nombre" name="usua_Nombre" [(ngModel)]="usuario.usua_Nombre" required minlength="3" pInputText
-            placeholder="Ingresa el nombre completo" [style]="{ 'width': '100%' }"
+          <input id="nombre" name="usua_Nombre" [(ngModel)]="usuario.usua_Nombre" required pInputText
+            placeholder="Ingresa el nombre de usuario" [style]="{ 'width': '100%' }"
             [class.ng-invalid]="isFieldInvalid(f, 'usua_Nombre')" [class.ng-dirty]="f.controls['usua_Nombre']?.dirty" />
 
           <small *ngIf="isFieldInvalid(f, 'usua_Nombre')" class="p-error" style="display:block;margin-top:0.5rem;">
-            El nombre es requerido (mínimo 3 caracteres)
+            El nombre de usuario es requerido
           </small>
         </div>
 
@@ -41,45 +41,63 @@
             Contraseña <span style="color:#ef4444;">*</span>
           </label>
           <p-password id="password" name="usua_Contrasena" [(ngModel)]="usuario.usua_Contrasena" required
-            placeholder="Contraseña segura" [toggleMask]="true" [feedback]="false" [style]="{ 'width': '100%' }"
-            [inputStyle]="{ 'width': '100%' }" [class.ng-invalid]="isFieldInvalid(f, 'usua_Contrasena')"
+            placeholder="Contraseña segura (mínimo 8 caracteres)" [toggleMask]="true" [feedback]="false"
+            [style]="{ 'width': '100%' }" [inputStyle]="{ 'width': '100%' }"
+            [class.ng-invalid]="passwordError || isFieldInvalid(f, 'usua_Contrasena')"
             [class.ng-dirty]="f.controls['usua_Contrasena']?.dirty">
           </p-password>
 
-          <small *ngIf="isFieldInvalid(f, 'usua_Contrasena')" class="p-error" style="display:block;margin-top:0.5rem;">
-            La contraseña es requerida
+          <small *ngIf="passwordError || isFieldInvalid(f, 'usua_Contrasena')" class="p-error"
+            style="display:block;margin-top:0.5rem;">
+            {{ passwordError || 'La contraseña es requerida' }}
           </small>
         </div>
 
-        <!-- Campo Rol ID -->
+        <!-- Campo Rol -->
         <div class="field">
           <label for="roleId"
             style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
-            Rol (ID) <span style="color:#ef4444;">*</span>
+            Rol <span style="color:#ef4444;">*</span>
           </label>
-          <p-inputNumber id="roleId" name="role_Id" [(ngModel)]="usuario.role_Id" required [showButtons]="true"
-            [min]="1" [style]="{ 'width': '100%' }" [inputStyle]="{ 'width': '100%' }">
-          </p-inputNumber>
+          <p-select id="roleId" name="role_Id" [(ngModel)]="usuario.role_Id" required [options]="roles"
+            optionLabel="role_Descripcion" optionValue="role_Id" placeholder="Selecciona un rol" [filter]="true"
+            [style]="{ 'width': '100%' }" [class.ng-invalid]="isFieldInvalid(f, 'role_Id')"
+            [class.ng-dirty]="f.controls['role_Id']?.dirty">
+          </p-select>
+          <small *ngIf="isFieldInvalid(f, 'role_Id')" class="p-error" style="display:block;margin-top:0.5rem;">
+            Selecciona un rol
+          </small>
         </div>
 
-        <!-- Campo Colaborador ID -->
+        <!-- Campo Colaborador -->
         <div class="field">
           <label for="colbId"
             style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
-            Colaborador (ID) <span style="color:#ef4444;">*</span>
+            Colaborador <span style="color:#ef4444;">*</span>
           </label>
-          <p-inputNumber id="colbId" name="colb_Id" [(ngModel)]="usuario.colb_Id" required [showButtons]="true"
-            [min]="1" [style]="{ 'width': '100%' }" [inputStyle]="{ 'width': '100%' }">
-          </p-inputNumber>
+          <p-select id="colbId" name="colb_Id" [(ngModel)]="usuario.colb_Id" required [options]="colaboradores"
+            optionValue="colb_Id" optionLabel="colb_Nombres" placeholder="Selecciona un colaborador" [filter]="true"
+            filterBy="colb_Nombres,colb_Apellidos,colb_DNI" [style]="{ 'width': '100%' }"
+            [class.ng-invalid]="isFieldInvalid(f, 'colb_Id')" [class.ng-dirty]="f.controls['colb_Id']?.dirty">
+            <ng-template let-colaborador pTemplate="item">
+              {{ getColaboradorLabel(colaborador) }}
+            </ng-template>
+            <ng-template let-colaborador pTemplate="selectedItem">
+              {{ getColaboradorLabel(colaborador) }}
+            </ng-template>
+          </p-select>
+          <small *ngIf="isFieldInvalid(f, 'colb_Id')" class="p-error" style="display:block;margin-top:0.5rem;">
+            Selecciona un colaborador
+          </small>
         </div>
 
         <!-- Toggle Administrador -->
         <div class="field"
           style="grid-column:1 / -1;display:flex;align-items:center;gap:1rem;padding:1rem;background:#f8fafc;border-radius:8px;border:1px solid #e2e8f0;">
-          <p-inputSwitch id="adminSwitch" name="usua_Admin" [(ngModel)]="usuario.usua_Admin">
-          </p-inputSwitch>
+          <p-toggleswitch id="adminSwitch" name="usua_Admin" [(ngModel)]="usuario.usua_Admin">
+          </p-toggleswitch>
           <label for="adminSwitch" style="margin:0;color:#334155;font-weight:500;cursor:pointer;">
-            Es administrador
+            Gerente - Administrador
           </label>
           <i class="pi pi-info-circle" style="margin-left:auto;color:#64748b;cursor:help;"
             title="Los administradores tienen acceso completo al sistema">
@@ -111,8 +129,8 @@
 <style>
   /* Inputs del formulario */
   ::ng-deep .create-user-card .p-inputtext,
-  ::ng-deep .create-user-card .p-inputnumber-input,
-  ::ng-deep .create-user-card .p-password input {
+  ::ng-deep .create-user-card .p-password input,
+  ::ng-deep .create-user-card .p-select {
     border-radius: 8px;
     border: 1px solid #cbd5e1;
     padding: 0.75rem;
@@ -121,24 +139,37 @@
   }
 
   ::ng-deep .create-user-card .p-inputtext:focus,
-  ::ng-deep .create-user-card .p-inputnumber-input:focus,
-  ::ng-deep .create-user-card .p-password input:focus {
+  ::ng-deep .create-user-card .p-password input:focus,
+  ::ng-deep .create-user-card .p-select:not(.p-disabled):hover,
+  ::ng-deep .create-user-card .p-select.p-focus {
     border-color: #875D4A;
     box-shadow: 0 0 0 3px rgba(135, 93, 74, 0.1);
   }
 
   /* Estados de error */
-  ::ng-deep .create-user-card .ng-invalid.ng-dirty {
+  ::ng-deep .create-user-card .ng-invalid.ng-dirty,
+  ::ng-deep .create-user-card .p-select.ng-invalid.ng-dirty {
     border-color: #ef4444 !important;
   }
 
-  ::ng-deep .create-user-card .ng-invalid.ng-dirty:focus {
+  ::ng-deep .create-user-card .ng-invalid.ng-dirty:focus,
+  ::ng-deep .create-user-card .p-select.ng-invalid.ng-dirty.p-focus {
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
   }
 
-  /* Botones del InputNumber */
-  ::ng-deep .create-user-card .p-inputnumber-button {
-    border-radius: 0 8px 8px 0;
+  /* Select panel */
+  ::ng-deep .p-select-overlay {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  ::ng-deep .p-select-overlay .p-select-option.p-select-option-selected {
+    background: #875D4A;
+    color: #fff;
+  }
+
+  ::ng-deep .p-select-overlay .p-select-option:not(.p-select-option-selected):hover {
+    background: rgba(135, 93, 74, 0.1);
   }
 
   /* InputSwitch personalizado */

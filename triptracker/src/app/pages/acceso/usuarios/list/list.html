@@ -1,14 +1,14 @@
 <div class="usuarios-container" style="max-width:1400px;margin:2rem auto;padding:0 1rem;">
 
   <!-- Breadcrumb -->
-  <nav aria-label="breadcrumb" style="margin-bottom:1.5rem;">
+  <!-- <nav aria-label="breadcrumb" style="margin-bottom:1.5rem;">
     <ul style="list-style:none;padding:0;display:flex;gap:.5rem;align-items:center;margin:0;">
       <li *ngFor="let item of breadcrumb; let last = last">
         <span *ngIf="last" style="font-weight:600;color:#875D4A;">{{ item.label }}</span>
         <span *ngIf="!last" style="color:#666;margin:0 .5rem;">/</span>
       </li>
     </ul>
-  </nav>
+  </nav> -->
 
   <!-- Card principal -->
   <p-card styleClass="shadow-3">
@@ -19,9 +19,8 @@
           <h2 style="margin:0;color:#111;font-size:1.75rem;font-weight:600;">Usuarios</h2>
           <!-- <p style="margin:0.5rem 0 0;color:#64748b;font-size:0.95rem;">Gestión de usuarios del sistema</p> -->
         </div>
-        <div>
-          <p-button [label]="showCreateForm ? 'Cerrar formulario' : 'Nuevo Usuario'"
-            [icon]="showCreateForm ? 'pi pi-times' : 'pi pi-plus'" [rounded]="true" (onClick)="toggleCreateForm()"
+        <div *ngIf="!showCreateForm && !showEditForm">
+          <p-button label="Nuevo Usuario" icon="pi pi-plus" [rounded]="true" (onClick)="toggleCreateForm()"
             styleClass="p-button-raised" [style]="{ 
               'background': '#875D4A', 
               'border-color': '#875D4A',
@@ -36,15 +35,49 @@
     <ng-template pTemplate="content">
       <!-- Formulario de creación -->
       <div *ngIf="showCreateForm" style="margin-bottom:1.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <h3 style="margin:0;color:#111;font-size:1.25rem;font-weight:600;">
+            <i class="pi pi-plus-circle" style="color:#875D4A;margin-right:0.5rem;"></i>
+            Nuevo Usuario
+          </h3>
+          <p-button label="Regresar" icon="pi pi-arrow-left" [outlined]="true" [rounded]="true"
+            (onClick)="onCancelCreate()" severity="secondary">
+          </p-button>
+        </div>
         <app-create (created)="onUserCreated($event)" (cancel)="onCancelCreate()"></app-create>
       </div>
 
+      <!-- Formulario de edición -->
+      <div *ngIf="showEditForm && editingUser" style="margin-bottom:1.5rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <h3 style="margin:0;color:#111;font-size:1.25rem;font-weight:600;">
+            <i class="pi pi-pencil" style="color:#875D4A;margin-right:0.5rem;"></i>
+            Editar Usuario
+          </h3>
+          <p-button label="Regresar" icon="pi pi-arrow-left" [outlined]="true" [rounded]="true"
+            (onClick)="onCancelEdit()" severity="secondary">
+          </p-button>
+        </div>
+        <app-edit [usuario]="editingUser" (updated)="onUserUpdated($event)" (cancel)="onCancelEdit()"></app-edit>
+      </div>
+
       <!-- Tabla de usuarios -->
-      <div *ngIf="!showCreateForm">
+      <div *ngIf="!showCreateForm && !showEditForm">
         <!-- Skeleton mientras carga -->
         <div *ngIf="loading" class="skeleton-container">
           <p-skeleton height="3rem" styleClass="mb-3"></p-skeleton>
           <p-skeleton height="2rem" styleClass="mb-2" *ngFor="let i of [1,2,3,4,5]"></p-skeleton>
+        </div>
+
+        <!-- Filter Input -->
+        <div *ngIf="!loading" style="margin-bottom:1rem;">
+          <label for="globalFilter"
+            style="display:block;margin-bottom:0.5rem;color:#334155;font-weight:500;font-size:0.9rem;">
+            Buscar
+          </label>
+          <input pInputText type="text" [(ngModel)]="globalFilterValue" (input)="onGlobalFilter($event)"
+            placeholder="Buscar por nombre..."
+            style="width:100%;padding:0.75rem;border:1px solid #e2e8f0;border-radius:6px;" />
         </div>
 
         <!-- Mensaje cuando no hay usuarios -->
@@ -55,38 +88,37 @@
         </div>
 
         <!-- Tabla con datos -->
-        <p-table *ngIf="!loading && usuarios.length > 0" [value]="usuarios" [tableStyle]="{ 'min-width': '50rem' }"
-          styleClass="p-datatable-gridlines p-datatable-sm" [paginator]="true" [rows]="10"
-          [rowsPerPageOptions]="[10, 25, 50]" [showCurrentPageReport]="true"
+        <p-table #dt *ngIf="!loading && usuarios.length > 0" [value]="usuarios" [tableStyle]="{ 'min-width': '50rem' }"
+          styleClass="p-datatable-sm" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 25, 50]"
+          [showCurrentPageReport]="true" [globalFilterFields]="['usua_Nombre']"
           currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} usuarios">
 
           <!-- Encabezados de la tabla -->
           <ng-template pTemplate="header">
             <tr>
-              <th style="background:#875D4A;color:#fff;text-align:center;width:100px;">
+              <th style="color:#111;font-weight:600;text-align:center;width:100px;">
                 Acciones
               </th>
-              <th pSortableColumn="usua_Nombre" style="background:#875D4A;color:#fff;">
+              <th pSortableColumn="usua_Nombre" style="color:#111;font-weight:600;">
                 Nombre
                 <p-sortIcon field="usua_Nombre"></p-sortIcon>
               </th>
-              <th pSortableColumn="usua_Estado" style="background:#875D4A;color:#fff;text-align:center;width:140px;">
+              <th pSortableColumn="usua_Estado" style="color:#111;font-weight:600;text-align:center;width:140px;">
                 Estado
-                <p-sortIcon style="color:#111;" field="usua_Estado"></p-sortIcon>
+                <p-sortIcon field="usua_Estado"></p-sortIcon>
               </th>
             </tr>
           </ng-template>
 
           <!-- Filas con los datos -->
-          <ng-template pTemplate="body" let-usuario>
+          <ng-template pTemplate="body" let-usuario let-i="rowIndex">
             <tr class="hover-row">
               <!-- Menú de acciones con dropdown -->
               <td style="text-align:center;">
-                <p-button icon="pi pi-ellipsis-v" [rounded]="true" [text]="true" (onClick)="menu.toggle($event)"
-                  [style]="{ 'color': '#111' }">
+                <p-button icon="pi pi-ellipsis-v" [rounded]="true" [text]="true"
+                  (onClick)="onMenuClick($event, usuario)" [style]="{ 'color': '#111' }">
 
                 </p-button>
-                <p-menu #menu [model]="getActionItems(usuario)" [popup]="true"></p-menu>
               </td>
 
               <!-- Nombre del usuario -->
@@ -115,6 +147,8 @@
         </p-table>
       </div>
     </ng-template>
+
+    <p-menu #menu [model]="menuItems" [popup]="true"></p-menu>
   </p-card>
 
 </div>
@@ -167,6 +201,18 @@
     padding: 1rem 0;
   }
 
+  /* Estilos de la tabla */
+  ::ng-deep .p-datatable .p-datatable-thead>tr>th {
+    background: #f8fafc;
+    border-bottom: 2px solid #875D4A;
+    padding: 1rem;
+  }
+
+  ::ng-deep .p-datatable .p-datatable-tbody>tr>td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
   ::ng-deep .p-sortablecolumn {
     color: #111;
   }
@@ -177,4 +223,132 @@
       padding: 0 0.5rem;
     }
   }
+
+  /* Modal Styling */
+  ::ng-deep .p-dialog .p-dialog-header {
+    background: #875D4A;
+    color: white;
+    border-radius: 12px 12px 0 0;
+  }
+
+  ::ng-deep .p-dialog .p-dialog-content {
+    padding: 2rem;
+  }
+
+  ::ng-deep .p-dialog .p-dialog-footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid #e2e8f0;
+  }
+
+  /* Fix menu items requiring double click */
+  ::ng-deep .p-menu .p-menuitem-link {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+  }
+
+  ::ng-deep .p-menu .p-menuitem {
+    pointer-events: auto !important;
+  }
+
+  ::ng-deep .p-menu .p-menuitem-link .p-menuitem-text,
+  ::ng-deep .p-menu .p-menuitem-link .p-menuitem-icon {
+    pointer-events: none !important;
+  }
+
+  ::ng-deep .p-menu .p-menuitem:not(.p-highlight):not(.p-disabled) .p-menuitem-link:hover {
+    background: rgba(135, 93, 74, 0.1);
+  }
+
+  ::ng-deep .p-menu .p-menuitem.p-focus .p-menuitem-link {
+    background: rgba(135, 93, 74, 0.05);
+  }
 </style>
+
+<!-- Modal de Confirmación -->
+<p-dialog [(visible)]="showConfirmModal" [modal]="true" [closable]="false" [style]="{ width: '450px' }"
+  [draggable]="false">
+  <ng-template pTemplate="header">
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <i class="pi pi-exclamation-triangle" style="font-size:1.5rem;"></i>
+      <span style="font-size:1.25rem;font-weight:600;">Confirmar Acción</span>
+    </div>
+  </ng-template>
+
+  <div style="padding:1rem 0;">
+    <p style="margin:0;font-size:1rem;color:#334155;line-height:1.6;">
+      ¿Está seguro que desea
+      <strong>{{ selectedUser?.usua_Estado ? 'desactivar' : 'activar' }}</strong>
+      el usuario
+      <strong>"{{ selectedUser?.usua_Nombre }}"</strong>?
+    </p>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+      <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [outlined]="true" [rounded]="true"
+        (onClick)="cancelDeactivate()" [style]="{ 'padding': '0.75rem 1.5rem' }">
+      </p-button>
+      <p-button label="Confirmar" icon="pi pi-check" [rounded]="true" [raised]="true" (onClick)="confirmDeactivate()"
+        [style]="{ 
+          'background': '#875D4A', 
+          'border-color': '#875D4A',
+          'padding': '0.75rem 1.5rem'
+        }">
+      </p-button>
+    </div>
+  </ng-template>
+</p-dialog>
+
+<!-- Modal de Restablecer Contraseña -->
+<p-dialog [(visible)]="showResetPasswordModal" [modal]="true" [closable]="false" [style]="{ width: '500px' }"
+  [draggable]="false">
+  <ng-template pTemplate="header">
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <i class="pi pi-key" style="font-size:1.5rem;"></i>
+      <span style="font-size:1.25rem;font-weight:600;">Restablecer Contraseña</span>
+    </div>
+  </ng-template>
+
+  <div style="padding:1rem 0;">
+    <p style="margin:0 0 1.5rem;font-size:0.95rem;color:#64748b;">
+      Usuario: <strong style="color:#334155;">{{ selectedUser?.usua_Nombre }}</strong>
+    </p>
+
+    <div style="margin-bottom:1.5rem;">
+      <label for="newPassword" style="display:block;margin-bottom:0.5rem;color:#334155;font-weight:500;">
+        Nueva Contraseña <span style="color:#ef4444;">*</span>
+      </label>
+      <p-password id="newPassword" [(ngModel)]="newPassword" placeholder="Mínimo 8 caracteres" [toggleMask]="true"
+        [feedback]="false" [style]="{ 'width': '100%' }" [inputStyle]="{ 'width': '100%' }">
+      </p-password>
+    </div>
+
+    <div style="margin-bottom:1rem;">
+      <label for="confirmPassword" style="display:block;margin-bottom:0.5rem;color:#334155;font-weight:500;">
+        Confirmar Contraseña <span style="color:#ef4444;">*</span>
+      </label>
+      <p-password id="confirmPassword" [(ngModel)]="confirmPassword" placeholder="Repite la contraseña"
+        [toggleMask]="true" [feedback]="false" [style]="{ 'width': '100%' }" [inputStyle]="{ 'width': '100%' }">
+      </p-password>
+    </div>
+
+    <small *ngIf="resetPasswordError" class="p-error" style="display:block;margin-top:0.5rem;">
+      {{ resetPasswordError }}
+    </small>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <div style="display:flex;gap:0.75rem;justify-content:flex-end;">
+      <p-button label="Cancelar" icon="pi pi-times" severity="secondary" [outlined]="true" [rounded]="true"
+        (onClick)="cancelResetPassword()" [style]="{ 'padding': '0.75rem 1.5rem' }">
+      </p-button>
+      <p-button label="Restablecer" icon="pi pi-check" [rounded]="true" [raised]="true" (onClick)="resetPassword()"
+        [style]="{ 
+          'background': '#875D4A', 
+          'border-color': '#875D4A',
+          'padding': '0.75rem 1.5rem'
+        }">
+      </p-button>
+    </div>
+  </ng-template>
+</p-dialog>

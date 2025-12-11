@@ -11,16 +11,15 @@
     <!-- Lado izquierdo - Imagen/Ilustración -->
     <div class="login-image-section">
       <div class="image-container">
-        
-        <div class="image-container">
-            <img src="/assets/images/loginBus.png"/>
-        </div>
+
+        <img src="assets/images/LoginBackground.jpg" />
+
       </div>
-      
+
       <!-- Overlay con texto decorativo -->
       <div class="image-overlay">
-        <h2 style="font-size: 2rem; font-weight: 700; margin: 0; color: #fff;">Bienvenido</h2>
-        <p style="color: rgba(255,255,255,0.9); margin-top: 0.5rem; font-size: 1.1rem;">Sistema de Gestión</p>
+        <h2 style="font-size: 2rem; font-weight: 700; margin: 0; color: #fff;">TripTracker</h2>
+        <p style="color: rgba(255,255,255,0.9); margin-top: 0.5rem; font-size: 1.1rem;">Gestion de Viajes</p>
       </div>
     </div>
 
@@ -29,7 +28,7 @@
       <div class="form-container">
         <!-- Header del formulario -->
         <div class="form-header">
-          <h1 style="margin: 0; color: #1e293b; font-size: 2rem; font-weight: 700;">Bienvnenido a TripTracker</h1>
+          <h1 style="margin: 0; color: #1e293b; font-size: 2rem; font-weight: 700;">Bienvenido a TripTracker</h1>
           <p style="margin: 0.5rem 0 0; color: #64748b; font-size: 1rem;">Inicia sesión para continuar</p>
         </div>
 
@@ -41,20 +40,11 @@
               <i class="pi pi-user"></i>
               Usuario
             </label>
-            <input 
-              id="username"
-              name="username"
-              type="text"
-              [(ngModel)]="usuario.usua_Nombre"
-              required
-              pInputText
-              placeholder="Ingresa tu usuario"
-              class="form-input"
+            <input id="username" name="username" type="text" [(ngModel)]="usuario.usua_Nombre" required pInputText
+              placeholder="Ingresa tu usuario" class="form-input"
               [class.input-error]="isFieldInvalid(loginForm, 'username')" />
-            
-            <small 
-              *ngIf="isFieldInvalid(loginForm, 'username')"
-              class="error-message">
+
+            <small *ngIf="isFieldInvalid(loginForm, 'username')" class="error-message">
               El usuario es requerido
             </small>
           </div>
@@ -65,36 +55,22 @@
               <i class="pi pi-lock"></i>
               Contraseña
             </label>
-            <p-password
-              id="password"
-              name="password"
-              [(ngModel)]="usuario.usua_Contrasena"
-              required
-              placeholder="Ingresa tu contraseña"
-              [toggleMask]="true"
-              [feedback]="false"
-              [style]="{ 'width': '100%' }"
-              [inputStyle]="{ 'width': '100%' }"
-              styleClass="password-field"
+            <p-password id="password" name="password" [(ngModel)]="usuario.usua_Contrasena" required
+              placeholder="Ingresa tu contraseña" [toggleMask]="true" [feedback]="false" [style]="{ 'width': '100%' }"
+              [inputStyle]="{ 'width': '100%' }" styleClass="password-field"
               [class.input-error]="isFieldInvalid(loginForm, 'password')">
             </p-password>
-            
-            <small 
-              *ngIf="isFieldInvalid(loginForm, 'password')"
-              class="error-message">
+
+            <small *ngIf="isFieldInvalid(loginForm, 'password')" class="error-message">
               La contraseña es requerida
             </small>
           </div>
 
 
-          
-          <p-button
-            type="submit"
-            [label]="loading ? 'Iniciando sesión...' : 'Iniciar Sesión'"
-            [icon]="loading ? 'pi pi-spin pi-spinner' : 'pi pi-sign-in'"
-            [disabled]="loading"
-            [style]="{ 'width': '100%', 'margin-top': '1.5rem' }"
-            styleClass="login-button">
+
+          <p-button type="submit" [label]="loading ? 'Iniciando sesión...' : 'Iniciar Sesión'"
+            [icon]="loading ? 'pi pi-spin pi-spinner' : 'pi pi-sign-in'" [disabled]="loading"
+            [style]="{ 'width': '100%', 'margin-top': '1.5rem' }" styleClass="login-button">
           </p-button>
 
           <!-- Mensaje de error general -->
@@ -168,15 +144,20 @@
   }
 
   @keyframes float {
-    0%, 100% {
+
+    0%,
+    100% {
       transform: translate(0, 0);
     }
+
     25% {
       transform: translate(30px, -30px);
     }
+
     50% {
       transform: translate(-20px, 20px);
     }
+
     75% {
       transform: translate(20px, 10px);
     }
@@ -202,6 +183,7 @@
       opacity: 0;
       transform: translateY(30px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0);
@@ -227,13 +209,13 @@
     justify-content: center;
   }
 
-  
+
   .image-container img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
- 
+
 
   .image-overlay {
     position: absolute;
