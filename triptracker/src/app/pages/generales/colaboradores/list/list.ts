@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { CreateComponent } from '../create/create';
+import { EditComponent } from '../edit/edit';
 import { MenuItem } from 'primeng/api';
 import { Menu } from 'primeng/menu';
 import { Table } from 'primeng/table';
@@ -45,6 +46,7 @@ interface Colaborador {
         CommonModule,
         FormsModule,
         CreateComponent,
+        EditComponent,
         CardModule,
         ButtonModule,
         TableModule,
@@ -64,6 +66,8 @@ export class ListComponent implements OnInit {
     colaboradores: Colaborador[] = [];
     loading = false;
     showCreateForm = false;
+    showEditForm = false;
+    editingColaborador: Colaborador | null = null;
     menuItems: MenuItem[] = [];
     selectedColaborador: Colaborador | null = null;
 
@@ -117,9 +121,37 @@ export class ListComponent implements OnInit {
         return sexo === 'M' ? 'Masculino' : 'Femenino';
     }
 
+    private formatLocalDateTime(date: Date): string {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        const seconds = String(date.getSeconds()).padStart(2, '0');
+        return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+    }
+
     eliminar(colaborador: Colaborador): void {
-        // Placeholder - no endpoint yet
-        this.toastr.info('Función de eliminación pendiente de implementar', 'Información');
+        const colaboradorData = {
+            ...colaborador,
+            usua_Modificacion: 1,
+            colb_FechaModificacion: this.formatLocalDateTime(new Date())
+        };
+
+        this.http.post(`${environment.apiUrl}/Generales/EliminarColaborador`, colaboradorData, {
+            headers: { 'x-api-key': environment.API_KEY }
+        }).subscribe({
+            next: () => {
+                colaborador.colb_Estado = !colaborador.colb_Estado;
+                const mensaje = colaborador.colb_Estado ? 'activado' : 'desactivado';
+                this.toastr.success(`Colaborador "${colaborador.colb_Nombres} ${colaborador.colb_Apellidos}" ${mensaje} exitosamente`, 'Actualizado');
+                this.cdr.detectChanges();
+            },
+            error: err => {
+                console.error('Error al actualizar colaborador', err);
+                this.toastr.error('No se pudo actualizar el colaborador. Intenta de nuevo.', 'Error');
+            }
+        });
     }
 
     onMenuClick(event: Event, colaborador: Colaborador): void {
@@ -145,7 +177,19 @@ export class ListComponent implements OnInit {
     }
 
     editar(colaborador: Colaborador): void {
-        this.toastr.info('Función de edición pendiente de implementar', 'Información');
+        this.editingColaborador = { ...colaborador };
+        this.showEditForm = true;
+    }
+
+    onColaboradorUpdated(updated: Colaborador): void {
+        this.cargarColaboradores();
+        this.showEditForm = false;
+        this.editingColaborador = null;
+    }
+
+    onCancelEdit(): void {
+        this.showEditForm = false;
+        this.editingColaborador = null;
     }
 
     detalles(colaborador: Colaborador): void {

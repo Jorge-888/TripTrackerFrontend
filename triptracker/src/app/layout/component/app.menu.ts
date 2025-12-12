@@ -42,9 +42,11 @@ export class AppMenu {
                 label: 'Viajes',
                 items: [
                     { label: 'Gestión de Viajes', icon: 'pi pi-fw pi-map', routerLink: ['/viajes/viajes'] },
+                    { label: 'Reporte de Viajes', icon: 'pi pi-fw pi-file', routerLink: ['/viajes/reportetransportista'] },
 
                 ]
             },
+
             // {
             //     label: 'UI Components',
             //     items: [

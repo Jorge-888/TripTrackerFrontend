@@ -1,0 +1,165 @@
+<div class="reporte-container">
+    <div class="filter-section">
+        <h3>
+            <i class="pi pi-filter"></i>
+            Filtros del Reporte
+        </h3>
+        <div style="display:flex;gap:1.5rem;align-items:end;flex-wrap:wrap;">
+            <div class="field" style="flex:1;min-width:300px;">
+                <label for="transportista"
+                    style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+                    Transportista
+                </label>
+                <p-select id="transportista" [options]="transportistas" [(ngModel)]="selectedTransportista"
+                    optionLabel="trpo_Nombres" [filter]="true" filterBy="trpo_Nombres,trpo_Apellidos,trpo_DNI"
+                    placeholder="Seleccione un transportista" [style]="{'width':'100%'}" (onChange)="onFilterChange()"
+                    [showClear]="true">
+                    <ng-template let-item pTemplate="item">
+                        <div style="display:flex;gap:0.5rem;">
+                            <span style="font-weight:600;">{{item.trpo_DNI}}</span>
+                            <span>{{item.trpo_Nombres}} {{item.trpo_Apellidos}}</span>
+                        </div>
+                    </ng-template>
+                    <ng-template let-selectedItem pTemplate="selectedItem">
+                        <div *ngIf="selectedItem" style="display:flex;gap:0.5rem;">
+                            <span>{{selectedItem.trpo_Nombres}} {{selectedItem.trpo_Apellidos}}</span>
+                        </div>
+                    </ng-template>
+                </p-select>
+            </div>
+            <div class="field" style="flex:1;min-width:300px;">
+                <label for="dateRange"
+                    style="display:block;margin-bottom:.5rem;color:#334155;font-weight:500;font-size:0.95rem;">
+                    Rango de Fechas
+                </label>
+                <p-datepicker id="dateRange" [(ngModel)]="dateRange" selectionMode="range" [readonlyInput]="true"
+                    placeholder="Seleccione rango de fechas" [showIcon]="true" [style]="{'width':'100%'}"
+                    dateFormat="dd/mm/yy" (onSelect)="onFilterChange()" [showButtonBar]="true"
+                    (onClearLinkClick)="onFilterChange()">
+                </p-datepicker>
+            </div>
+        </div>
+    </div>
+
+    <div class="report-header" *ngIf="selectedTransportista">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+            <h2 style="margin:0;color:#875D4A;font-weight:700;font-size:1.75rem;">Reporte de Viajes por Transportista
+            </h2>
+        </div>
+
+        <div class="transportista-info">
+            <div class="info-item">
+                <p class="label">Nombre Completo</p>
+                <p class="value">{{ getTransportistaFullName() }}</p>
+            </div>
+            <div class="info-item">
+                <p class="label">DNI</p>
+                <p class="value">{{ selectedTransportista.trpo_DNI }}</p>
+            </div>
+            <div class="info-item">
+                <p class="label">Vehículo Actual</p>
+                <p class="value">{{ selectedTransportista.trpo_Vehiculo }} <span
+                        style="color:#64748b;font-weight:400;font-size:1rem;">({{ selectedTransportista.trpo_Placa
+                        }})</span></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="report-table" *ngIf="selectedTransportista">
+        <p-table [value]="filteredViajes" [tableStyle]="{ 'min-width': '75rem' }" [paginator]="true" [rows]="10"
+            [rowsPerPageOptions]="[10, 25, 50, 100]" [showCurrentPageReport]="true"
+            currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} viajes">
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="dateObj">Fecha <p-sortIcon field="dateObj"></p-sortIcon></th>
+                    <th pSortableColumn="sucu_Descripcion">Sucursal <p-sortIcon field="sucu_Descripcion"></p-sortIcon>
+                    </th>
+                    <th>Vehículo Utilizado</th>
+                    <th pSortableColumn="calculatedColaboradoresCount" style="text-align:center;">Colaboradores
+                        <p-sortIcon field="calculatedColaboradoresCount"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="viaj_TarifaKM">Tarifa/KM <p-sortIcon field="viaj_TarifaKM"></p-sortIcon></th>
+                    <th pSortableColumn="calculatedDistanciaTotal" style="text-align:right;">Distancia Total <p-sortIcon
+                            field="calculatedDistanciaTotal"></p-sortIcon></th>
+                    <th pSortableColumn="viaj_TarifaTotal" style="text-align:right;">Tarifa Total <p-sortIcon
+                            field="viaj_TarifaTotal"></p-sortIcon></th>
+                    <th>Auditoría</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-viaje>
+                <tr>
+                    <td>{{ viaje.viaj_Fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td>{{ viaje.sucu_Descripcion }}</td>
+                    <td>
+                        <div style="font-weight:600;">{{ viaje.trpo_Placa }}</div>
+                        <small style="color:#64748b;">{{ viaje.trpo_Vehiculo }}</small>
+                    </td>
+                    <td style="text-align:center;">
+                        <span
+                            style="background:#f1f5f9;padding:0.25rem 0.75rem;border-radius:99px;font-weight:600;font-size:0.9rem;">
+                            {{ viaje.calculatedColaboradoresCount }}
+                        </span>
+                    </td>
+                    <td class="highlight-cell" style="font-weight:600;color:#1e293b;">
+                        L {{ viaje.viaj_TarifaKM | number:'1.2-2' }}
+                    </td>
+                    <td class="highlight-cell" style="text-align:right;">
+                        {{ viaje.calculatedDistanciaTotal | number:'1.2-2' }} km
+                    </td>
+                    <td class="highlight-cell" style="text-align:right;color:#875D4A;">
+                        L {{ viaje.viaj_TarifaTotal | number:'1.2-2' }}
+                    </td>
+                    <td>
+                        <div style="font-size:0.85rem;">
+                            <div style="margin-bottom:0.5rem;">
+                                <i class="pi pi-plus-circle" style="color:#10b981;font-size:0.75rem;"></i>
+                                <span style="font-weight:500;"> {{ viaje.usuarioCreacion }}</span>
+                                <div style="color:#64748b;font-size:0.8rem;margin-left:1rem;">
+                                    {{ viaje.viaj_FechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+                                </div>
+                            </div>
+                            <div *ngIf="viaje.usuarioModificacion">
+                                <i class="pi pi-pencil" style="color:#f59e0b;font-size:0.75rem;"></i>
+                                <span style="font-weight:500;"> {{ viaje.usuarioModificacion }}</span>
+                                <div style="color:#64748b;font-size:0.8rem;margin-left:1rem;">
+                                    {{ viaje.viaj_FechaModificacion | date:'dd/MM/yyyy HH:mm' }}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="8" style="text-align:center;padding:3rem;color:#64748b;">
+                        <i class="pi pi-search" style="font-size:2rem;margin-bottom:1rem;display:block;"></i>
+                        No se encontraron viajes para este transportista en el rango de fechas seleccionado.
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <tr>
+                    <td colspan="6"
+                        style="text-align:right;font-weight:600;font-size:1.1rem;padding-right:2rem;background:#f8fafc;">
+                        TOTAL TARIFA:
+                    </td>
+                    <td
+                        style="text-align:right;font-weight:700;font-size:1.25rem;color:#875D4A;background:#fffaf8;border:1px solid #fed7aa;">
+                        L {{ totalTarifaGlobal | number:'1.2-2' }}
+                    </td>
+                    <td style="background:#f8fafc;"></td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <div *ngIf="!selectedTransportista && !loading"
+        style="text-align:center;padding:5rem;color:#94a3b8;background:#f8fafc;border-radius:12px;margin-top:2rem;border:2px dashed #e2e8f0;">
+        <i class="pi pi-truck" style="font-size:4rem;margin-bottom:1.5rem;opacity:0.5;"></i>
+        <p style="font-size:1.25rem;font-weight:500;">Seleccione un transportista para visualizar el reporte</p>
+    </div>
+</div>

@@ -7,8 +7,10 @@ import { Notfound } from './app/pages/notfound/notfound';
 import { ListComponent as UsuariosList } from './app/pages/acceso/usuarios/list/list';
 import { ListComponent as ColaboradoresList } from './app/pages/generales/colaboradores/list/list';
 import { ListComponent as ViajesList } from './app/pages/viajes/viajes/list/list';
+
 import { LoginComponent } from './app/pages/login/login/login';
 import { HomeComponent } from './app/pages/home/home';
+import { ReporteTransportistaComponent } from './app/pages/viajes/reporte-transportista/reporte-transportista';
 
 
 
@@ -55,10 +57,9 @@ export const appRoutes: Routes = [
         component: AppLayout,
         children: [
             { path: 'viajes', component: ViajesList },
-
+            { path: 'reportetransportista', component: ReporteTransportistaComponent }
         ]
     },
-
 
 
 

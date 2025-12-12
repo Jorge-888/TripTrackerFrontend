@@ -11,7 +11,7 @@
                         <h3 style="margin:0;color:#111;font-size:1.5rem;font-weight:600;">Colaboradores</h3>
                     </div>
                 </div>
-                <div *ngIf="!showCreateForm">
+                <div *ngIf="!showCreateForm && !showEditForm">
                     <p-button label="Nuevo Colaborador" icon="pi pi-plus" [rounded]="true"
                         (onClick)="toggleCreateForm()" styleClass="p-button-raised" [style]="{ 
               'background': '#875D4A', 
@@ -39,8 +39,23 @@
                 <app-create (created)="onColaboradorCreated($event)" (cancel)="onCancelCreate()"></app-create>
             </div>
 
+            <!-- Formulario de edición -->
+            <div *ngIf="showEditForm" style="margin-bottom:1.5rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                    <h3 style="margin:0;color:#111;font-size:1.25rem;font-weight:600;">
+                        <i class="pi pi-pencil" style="color:#875D4A;margin-right:0.5rem;"></i>
+                        Editar Colaborador
+                    </h3>
+                    <p-button label="Regresar" icon="pi pi-arrow-left" [outlined]="true" [rounded]="true"
+                        (onClick)="onCancelEdit()" severity="secondary">
+                    </p-button>
+                </div>
+                <app-edit [colaborador]="editingColaborador!" (updated)="onColaboradorUpdated($event)"
+                    (cancel)="onCancelEdit()"></app-edit>
+            </div>
+
             <!-- Tabla de colaboradores -->
-            <div *ngIf="!showCreateForm">
+            <div *ngIf="!showCreateForm && !showEditForm">
                 <!-- Skeleton mientras carga -->
                 <div *ngIf="loading" class="skeleton-container">
                     <p-skeleton height="3rem" styleClass="mb-3"></p-skeleton>
